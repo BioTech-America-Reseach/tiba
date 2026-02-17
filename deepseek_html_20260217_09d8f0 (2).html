@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KILINGE CHA DR WILLIAM MTANZANIA</title>
+    <style>
+        :root {
+            --bg-dark: #050a14;
+            --dr-yellow: #facc15; 
+            --dr-blue: #0ea5e9;
+            --card-gold: #d4af37;
+            --white: #ffffff;
+            --danger-high: #ff4444;
+            --danger-medium: #ffbb33;
+            --danger-low: #00C851;
+        }
+
+        body {
+            font-family: 'Trebuchet MS', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--white);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to bottom, #000, transparent);
+            width: 100%;
+            border-bottom: 3px solid var(--dr-yellow);
+        }
+
+        .dr-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--dr-yellow);
+            text-transform: uppercase;
+        }
+
+        /* FOMU YA KUJAZA */
+        .setup-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 20px;
+            border: 2px solid var(--dr-blue);
+            width: 90%;
+            max-width: 500px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-magic {
+            background: var(--dr-yellow);
+            color: #000;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+        }
+
+        /* LOADING ANIMATION */
+        #loading-area {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .running-dr {
+            width: 80px;
+            animation: runFast 2s infinite linear;
+        }
+
+        @keyframes runFast {
+            0% { transform: translateX(-150px); }
+            100% { transform: translateX(150px); }
+        }
+
+        /* CARDS & GOLD SHINE */
+        #cards-container {
+            display: none;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .card {
+            width: 300px;
+            height: 500px;
+            perspective: 1000px;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -200%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(250, 204, 21, 0.5), transparent);
+            transform: skewX(-20deg);
+            animation: moveShine 4s infinite;
+            z-index: 5;
+        }
+
+        @keyframes moveShine {
+            0% { left: -200%; }
+            100% { left: 200%; }
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner { transform: rotateY(180deg); }
+
+        .card-back {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden;
+            background: url('https://imgur.com/56mGWPt') center/cover;
+            border: 4px solid var(--card-gold);
+            border-radius: 20px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+
+        .card-front {
+            position: absolute; 
+            width: 100%; 
+            height: 100%;
+            backface-visibility: hidden;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('https://imgur.com/xZ8y6DB');
+            background-size: cover;
+            background-position: center;
+            color: #111;
+            transform: rotateY(180deg);
+            border-radius: 20px; 
+            padding: 25px;
+            box-sizing: border-box;
+            border: 6px solid var(--dr-yellow);
+            overflow-y: auto;
+            display: block;
+        }
+
+        /* SCROLLBAR STYLE */
+        .card-front::-webkit-scrollbar { width: 5px; }
+        .card-front::-webkit-scrollbar-thumb { background: var(--dr-yellow); border-radius: 10px; }
+
+        /* KISANDUKU CHA KUCHANGIA & MACHO */
+        .eye-icon {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--dr-yellow);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 0 15px black;
+        }
+
+        #contribution-box {
+            display: none;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            margin: 20px auto;
+            border: 2px dashed var(--dr-yellow);
+        }
+
+        .ussd-btn {
+            background: #22c55e;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        ul { padding-left: 15px; }
+        li { margin-bottom: 8px; font-size: 0.95rem; }
+        .probability-high { color: #ff4444; font-weight: bold; animation: blink 1s infinite; }
+        .probability-medium { color: #ffbb33; font-weight: bold; }
+        .probability-low { color: #00C851; font-weight: bold; }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1 class="dr-title">MZEE DR. WILLIAM MTANZANIA</h1>
+</header>
+
+<div id="registration-form" class="setup-container">
+    <label>Niandikie majina yako hapa mawili:</label>
+    <input type="text" id="full-name" placeholder="Mfano: Ally Bujiku">
+    
+    <label>Jinsia yako:</label>
+    <select id="gender">
+        <option value="Mwanaume">Mwanaume</option>
+        <option value="Mwanamke">Mwanamke</option>
+    </select>
+
+    <label>Tarehe ya Kuzaliwa:</label>
+    <div style="display:flex; gap:5px;">
+        <select id="birth-day"><script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}</option>`);</script></select>
+        <select id="birth-month">
+            <script>
+                const miezi = ["January","February","March","April","Mei","June","July","Agost","September","October","November","December"];
+                miezi.forEach((m, i) => document.write(`<option value="${i+1}">${m}</option>`));
+            </script>
+        </select>
+        <input type="number" id="birth-year" placeholder="Mwaka">
+    </div>
+    <br>
+    <button class="btn-magic" onclick="anza()">Bofya HAPA KUANZA RAMLI YAKO</button>
+</div>
+
+<div id="loading-area">
+    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJ6am96am96am96am96am96am96am96am96am96am96am96/3o7TKMGpxxSAt/giphy.gif" class="running-dr">
+    <p style="color:var(--dr-yellow)">Kazi imeanza .. ..  Dr William anawajari sana sema hamjui</p>
+</div>
+
+<div id="cards-container">
+    <div class="card" onclick="this.classList.toggle('flipped')"><div class="card-inner"><div class="card-back"><h3>JINA LAKO</h3></div><div class="card-front"><h3 id="c0-t"></h3><div id="c0-x"></div></div></div></div>
+    <div class="card" onclick="this.classList.toggle('flipped')"><div class="card-inner"><div class="card-back"><h3>SIFA 9 + KAZI</h3></div><div class="card-front"><h3 id="c1-t"></h3><div id="c1-x"></div></div></div></div>
+    <div class="card" onclick="this.classList.toggle('flipped')"><div class="card-inner"><div class="card-back"><h3>HATARI 10</h3></div><div class="card-front"><h3 id="c2-t"></h3><div id="c2-x"></div></div></div></div>
+    <div class="card" onclick="this.classList.toggle('flipped')"><div class="card-inner"><div class="card-back"><h3>TIBA 30</h3></div><div class="card-front"><h3 id="c3-t"></h3><div id="c3-x"></div></div></div></div>
+</div>
+
+<div id="contribution-box">
+    <p>Program hii imetumia zaidi ya milioni 29 changia chochote kwa namba hii 0762286282:</p>
+    <select id="network-ussd">
+        <option value="*150*00#">Vodacom (*150*00#)</option>
+        <option value="*150*01#">Tigo Pesa (*150*01#)</option>
+        <option value="*150*60#">Airtel Money (*150*60#)</option>
+    </select>
+    <button class="ussd-btn" onclick="pigaUssd()">KUCHANGIA BOFYA HAPA</button>
+</div>
+
+<div class="eye-icon" id="eye-icon" onclick="funguaLink()"><span style="font-size:30px;">👁️</span></div>
+
+<script>
+    // ===== Hifadhi kamili ya DATABASE (HAIJAPOTEZA CHOKAA) =====
+    const HERUFI_DB = {
+        'A': [
+            "Wewe ni jasiri wa mambo mengi katika maisha yako na hutetemeshwi na changamoto zinazokupata mwanangu.",
+            "Nyota ya jina lako inaonyesha una kipaji kikubwa cha uongozi na unajiamini sana unaposimama mbele ya watu.",
+            "Hupendi kabisa kuonewa wala kuona watu wengine wakionewa, asili yako inakulazimu kutafuta haki wakati wote.",
+            "Akili yako ni nyepesi sana katika kung'amua fursa za maendeleo na namna ya kutengeneza njia mpya za mafanikio.",
+            "Una bidii ya ajabu na unapopanga jambo lako unahakikisha unalimaliza kwa wakati bila kujali vikwazo vya njiani."
+        ],
+        'B': [
+            "Una moyo wa upole na upendo uliopitiliza, mara nyingi unatanguliza furaha ya wengine kabla ya yako mwanangu.",
+            "Asili yako inaonyesha una uwezo mkubwa wa kupenda kwa dhati, jambo ambalo hukufanya uwe rafiki wa watu wengi.",
+            "Wewe ni msiri sana na unajua kuhifadhi maneno ya watu moyoni mwako bila kuyatoa nje kirahisi.",
+            "Mvuto wako wa asili unatokana na utulivu ulionao, watu wanahisi amani wanapokuwa karibu nawe mwanangu.",
+            "Unajali sana familia yako na uko tayari kujitolea kwa hali na mali ili kuhakikisha wapendwa wako wanaishi vyema."
+        ],
+        'C': [
+            "Wewe ni mbunifu wa mambo makubwa na akili yako inazalisha mawazo mapya kila kukicha mwanangu.",
+            "Mwenye ucheshi kwa watu wengi sana, unajua jinsi ya kuchangamsha mazingira na kuwafanya watu wacheke.",
+            "Una kipaji cha asili cha usemaji au sanaa, maneno yako yana nguvu ya kuvutia na kushawishi wengine.",
+            "Hupendi kabisa upweke, asili yako inataka uwe karibu na watu ili uweze kubadilishana nao hekima na maarifa.",
+            "Mvumbuzi wa mambo yaliyojificha, una jicho la ziada la kuona vitu ambavyo watu wengine hawawezi kuviona."
+        ],
+        'D': [
+            "Mwenye msimamo mkali usioyumba, unaposema 'ndio' au 'hapana' unamaanisha kutoka vilindi vya moyo wako.",
+            "Nidhamu yako katika kazi na maisha ndiyo nguzo inayokufanya uheshimike katika jamii inayokuzunguka.",
+            "Mchapa kazi shupavu ambaye hachoki mpaka aone matokeo ya kile alichokikusudia tangu mwanzo.",
+            "Muaminifu kwa watu wote wanaokuzunguka, sifa yako hii inakufanya uwe kimbilio la watu wanaotafuta ushauri.",
+            "Huyumbi kirahisi hata kama mawimbi ya maisha yakawa makali, una mizizi mirefu ya uvumilivu mwanangu."
+        ],
+        'E': [
+            "Unapenda uhuru wa akili na mwili, hupendi kuwekewa mipaka inayozuia uwezo wako wa kupata maendeleo.",
+            "Asili ya jina lako inaonyesha ni safari; unapenda kujifunza mambo mapya na kutembelea maeneo mbalimbali.",
+            "Mwerevu sana katika kuchambua mambo magumu na kuyarahisisha ili kila mtu aweze kuelewa mwanangu.",
+            "Mvuto wako unatokana na wepesi wako wa kuzoeana na watu na namna unavyokabiliana na mabadiliko ya maisha.",
+            "Mdadisi wa mambo ya asili, hupendi kupewa majibu mepesi bila kufanya utafiti wako mwenyewe kwanza."
+        ],
+        'F': [
+            "Una huruma iliyopitiliza mwanangu, una uwezo wa kuhisi maumivu ya mtu mwingine kana kwamba ni yako.",
+            "Mlezi wa wengi katika familia na jamii, watu wanakuheshimu kama kiongozi mwenye moyo wa kutoa.",
+            "Mkarimu sana na nyumba yako ni kimbilio la wageni na wenye shida wanaotafuta faraja mwanangu.",
+            "Amani yako ya moyoni inatokana na kuishi kwa upendo na uaminifu bila kuweka vinyongo na watu wengine.",
+            "Unatanguliza familia kwanza katika kila uamuzi unaufanya, ustawi wao ndio furaha yako kuu maishani."
+        ],
+        'G': [
+            "Mwenye busara ya kale mwanangu, maneno yako yamejawa na hekima inayoweza kuponya majeraha ya mioyo.",
+            "Msiri sana na unapenda kufanya mambo yako kwa ukimya mkubwa mpaka pale mafanikio yatakapojitokeza.",
+            "Mtafiti wa siri za ulimwengu na asili, unapenda kusoma na kuongeza maarifa kila iitwapo leo mwanangu.",
+            "Una imani kali katika kile unachokiamini, na hakuna mtu anayeweza kukutoa katika mstari wako kirahisi.",
+            "Utulivu wako ndiyo silaha yako kuu; hata katika dhoruba kali, unajua jinsi ya kubaki na amani ya roho."
+        ],
+        'H': [
+            "Asili yako imebeba nyota ya fedha na mafanikio, una uwezo mkubwa wa kuzalisha mali popote unapopita.",
+            "Mafanikio yako yanakuja kwa haraka kwa sababu hupotezi muda katika mambo yasiyo na tija mwanangu.",
+            "Nguvu yako ya asili inatokana na uwezo wako wa kupambana na hali yoyote bila kulalamika wala kukata tamaa.",
+            "Mwenye heshima kubwa na unajua jinsi ya kujiweka katika nafasi ya mamlaka inayokubalika na wengine.",
+            "Msimamo wako katika kutafuta maendeleo ni wa kishujaa, una malengo ya mbali sana na utayafikia mwanangu."
+        ],
+        'I': [
+            "Mwenye hisia kali sana, unajua kupenda na unajua kuchukia uovu kutoka ndani ya vilindi vya moyo wako.",
+            "Urembo wako unatokana na moyo wako safi na unadhifu wa mawazo yako unayoyatoa kwa watu mwanangu.",
+            "Utu na wema ni nguzo zako kuu, hupendi kuona kiumbe chochote kinateseka katika macho yako.",
+            "Msanii wa asili na mbunifu wa vitu vya thamani, una jicho la kipekee katika kupangilia uzuri mwanangu.",
+            "Mvuto wako ni wa kiroho zaidi, watu wanajikuta wanakuamini bila hata kukuuliza maswali mengi."
+        ],
+        'J': [
+            "Unaishi kwa malengo makubwa na hupendi mambo madogo madogo yanayopoteza muda wako mwanangu.",
+            "Mshindi wa kila vita unayopigana, asili yako haijui neno 'kushindwa' na unajua jinsi ya kuinuka ukidondoka.",
+            "Jasiri wa mambo mengi katika maisha yako, unakabiliana na hofu zako na kuzigeuza kuwa fursa za mafanikio.",
+            "Muaminifu katika ahadi zako, ukisema utafanya jambo basi watu wanaweza kuweka rehani imani yao kwako.",
+            "Mtafutaji shupavu asiyechoka, una kipaji cha kupata unachokitaka kwa kutumia akili na nguvu zako mwanangu."
+        ],
+        'K': [
+            "Nguvu zako za ajabu zinatokana na ujasiri wa ndani ambao hauonekani kirahisi kwa macho ya kawaida.",
+            "Mvuto wako ni mkubwa na wa ajabu, una uwezo wa kuvuta watu kwako kwa tabasamu au neno moja tu.",
+            "Msemaji wa kweli ambaye hupambi maneno, unapenda ukweli hata kama ni mchungu kwa wengine mwanangu.",
+            "Mshindi wa mambo mengi unayoyashika, mikono yako imebarikiwa kukuza kile unachokigusa mwanangu.",
+            "Mwenye msimamo usioyumba, wewe ni nguzo ya mtegemeo kwa watu wanaopoteza mwelekeo wa maisha."
+        ],
+        'L': [
+            "Mwenye upendo usio na masharti, asili yako ni kutoa bila kutegemea kurudishiwa chochote mwanangu.",
+            "Mkarimu kwa watu wa tabaka zote, huna ubaguzi na unajua kuishi na kila mtu kwa hekima na amani.",
+            "Hekima ya asili imejificha katika kila uamuzi unaofanya, unafikiria kesho kabla ya kufurahia leo.",
+            "Msikivu sana na unajua kutoa ushauri unaojenga, wewe ni mkombozi wa watu wenye msongo wa mawazo.",
+            "Mvuto wa sura na tabia ni zawadi uliyopewa tangu kuzaliwa, unaleta nuru popote unapoingia mwanangu."
+        ],
+        'M': [
+            "Mlezi wa familia na ndugu, wewe ndiye unayeweka watu pamoja na kuhakikisha umoja unakuwepo.",
+            "Busara zako ni za kutosha kuendesha miradi mikubwa, una akili ya kupangilia mambo kwa ufanisi.",
+            "Bidii ya kazi ndiyo siri ya mafanikio yako, hupendi uvivu na unajua thamani ya kutafuta kwa jasho lako.",
+            "Heshima ndiyo lugha yako kuu, unajiheshimu na unajua jinsi ya kuwaheshimu wakubwa na wadogo mwanangu.",
+            "Msimamo wako katika maadili ni wa kuigwa, wewe ni kioo cha jamii katika kuishi maisha ya uaminifu."
+        ],
+        'N': [
+            "Mbunifu wa mawazo yanayobadilisha maisha ya watu, hupendi kufuata mkumbo wa watu wengine mwanangu.",
+            "Mkweli wa moyo na hupendi uongo, asili yako inakulazimisha kusema ukweli hata kama ni hatari kwako.",
+            "Ujasiri wako unatokana na kujijua wewe ni nani, hutikisiki na maneno ya kejeli kutoka kwa watu mwanangu.",
+            "Mabadiliko kwako ni fursa, unajua jinsi ya kugeuza hali ngumu kuwa daraja la kufikia mafanikio makubwa.",
+            "Mvuto wa akili yako unawafanya watu wenye hekima wapende kukaa nawe ili wajifunze kitu kipya."
+        ],
+        'O': [
+            "Mwenye hekima iliyopitiliza, unajua siri za maisha na unajua jinsi ya kuzitumia kwa faida yako na wengine.",
+            "Utulivu wa roho ni zawadi yako kuu, huna papara katika kufanya maamuzi muhimu ya maisha mwanangu.",
+            "Imani yako ndiyo inakuongoza katika kila hatua, unajua kuwa kuna nguvu kubwa inayokulinda mwanangu.",
+            "Msimamo wako ni kama mlima, huyumbishwi na upepo wa maneno wala majaribu ya muda mfupi.",
+            "Nguvu yako ya siri inatokana na uwezo wako wa kusamehe na kusahau yaliyopita ili ujenge kesho iliyo bora."
+        ],
+        'P': [
+            "Mchambuzi wa mambo yaliyojificha, una uwezo wa kuona undani wa mtu au jambo kabla hata hawajasema.",
+            "Busara yako ni ya kipekee na hupendi kuongea maneno mengi yasiyo na maana kwa watu mwanangu.",
+            "Msomi wa asili, unapenda kusoma alama za nyakati na mazingira ili uweze kuchukua hatua sahihi.",
+            "Mwenye siri nzito ambazo huzitoa kwa watu waaminifu tu, wewe ni mlinzi wa hazina za maarifa mwanangu.",
+            "Mkimya lakini mwenye nguvu kubwa ya ushawishi, vitendo vyako vinaongea kwa sauti kubwa kuliko maneno."
+        ],
+        'R': [
+            "Nguvu ya kazi imejificha katika mikono yako, una uwezo wa kufanya mambo makubwa kwa muda mfupi.",
+            "Mtafutaji shupavu ambaye hachagui kazi, unajua kuwa kila tone la jasho lina malipo yake mwanangu.",
+            "Jasiri katika kukabiliana na maadui zako, unajua jinsi ya kujilinda na kulinda maslahi yako mwanangu.",
+            "Muaminifu kwa wale wanaokuamini, sifa yako hii inakufanya uwe kiongozi wa kuaminika katika biashara.",
+            "Bidii yako haina mipaka, una uwezo wa kufanya kazi usiku na mchana ili kutimiza ndoto zako mwanangu."
+        ],
+        'S': [
+            "Mshindi wa mambo makubwa katika jamii, nyota yako inang'aa sana mwanangu na huwezi kufichika.",
+            "Mvuto mkubwa wa asili unaovuta fedha na fursa, una bahati ya kukutana na watu sahihi kwa wakati sahihi.",
+            "Akili ya fedha na biashara imekaa ndani yako, unajua jinsi ya kuwekeza na kukuza mali zako mwanangu.",
+            "Nguvu yako ya ushawishi inatokana na sauti yako yenye mamlaka na uhakika wa kile unachokisema.",
+            "Sauti yako ina uponyaji, maneno unayoyasema yanawapa watu matumaini na nguvu ya kuendelea mbele."
+        ],
+        'T': [
+            "Nidhamu ya hali ya juu ndiyo siri ya maisha yako, unajali muda na unatimiza wajibu wako kwa usahihi.",
+            "Malengo yako ni makubwa na unayafuatilia kwa umakini wa hali ya juu bila kupoteza mwelekeo mwanangu.",
+            "Bidii yako katika kutafuta maarifa inakufanya uwe mtegemewa katika kutatua matatizo magumu ya kijamii.",
+            "Msikivu kwa ushauri wa wazee na wenye hekima, unajua kuwa kusikiliza ni mwanzo wa kuelewa mwanangu.",
+            "Mtegemewa katika familia na kazi, watu wanajua kuwa ukipewa jambo utalitekeleza kwa uaminifu mkuu."
+        ],
+        'U': [
+            "Mwenye bahati ya asili katika mambo mengi unayoyagusa, milango ya mafanikio inafunguka kirahisi kwako.",
+            "Mvumbuzi wa njia mpya za maisha, hupendi kukariri mambo ya zamani yasiyokuwa na tija mwanangu.",
+            "Furaha yako ni ya kuambukiza, unajua jinsi ya kuwafanya watu waliochanganyikiwa wapate amani ya roho.",
+            "Mvuto wako ni wa kipekee na unajipenda katika hali ya usafi na uzuri wakati wote mwanangu.",
+            "Mkarimu na mwenye roho ya upendo kwa viumbe vyote, unajua kuwa kutoa ndiyo siri ya kuongezewa."
+        ],
+        'V': [
+            "Jasiri na shujaa katika kupigania kile unachokiamini, hutetemeshwi na idadi ya maadui mwanangu.",
+            "Maono makubwa ya maisha ya baadae, unaona mambo yatakayotokea kabla hayajafika machoni pa watu.",
+            "Imani yako kwa Mwenyezi Mungu ndiyo siri ya nguvu zako, unajua kuwa bila yeye huwezi kufanya lolote.",
+            "Nguvu yako ya asili inatokana na uwezo wa kuvumilia maumivu na changamoto bila kulalamika mwanangu.",
+            "Mvuto wako ni wa kipekee, unaonekana kuwa na mamlaka hata kama huna cheo chochote cha kiserikali."
+        ],
+        'W': [
+            "Busara ya kale imejificha katika akili yako, unajua kutofautisha kati ya ukweli na uongo kirahisi.",
+            "Ukweli ndiyo ngao yako, hupendi kuficha uovu na unajua jinsi ya kuusema kwa hekima na busara mwanangu.",
+            "Mtafiti wa siri za asili, unapenda kukaa peke yako wakati mwingine ili uweze kutafakari maisha mwanangu.",
+            "Msiri sana na mambo yako mengi unayafanya kwa siri kubwa mpaka matokeo yatakapoononekana hadharani.",
+            "Hekima yako inakusaidia kuepuka mitego mingi ya maadui walioko karibu nawe bila wao kujua mwanangu."
+        ],
+        'Y': [
+            "Uhuru wa akili ni kipaumbele chako cha kwanza, hupendi kupangiwa jinsi ya kuishi maisha yako mwanangu.",
+            "Mbunifu wa mambo ya asili, una uwezo wa kugeuza kitu kidogo kuwa cha thamani kubwa kwa kutumia akili yako.",
+            "Hisia zako ni safi na unajali sana utu wa mwanadamu kuliko mali za ulimwengu huu mwanangu.",
+            "Mvumilivu katika magumu na unajua kuwa baada ya kila dhiki kuna faraja inayokuja kwa wakati wake.",
+            "Amani yako inatokana na kuishi maisha rahisi yasiyo na mashindano yasiyo na tija na watu wengine."
+        ],
+        'Z': [
+            "Bahati ya fedha inaambatana na jina lako, asili yako ni kumiliki na kutawala rasilimali mwanangu.",
+            "Mshindi katika mashindano yote ya kimaisha, unajua jinsi ya kutumia akili yako kupata unachotaka.",
+            "Busara zako ni za kutosha kusaidia kizazi kizima, wewe ni mshauri wa siri wa watu wenye vyeo vikubwa.",
+            "Msiri sana na hupendi kujionyesha una mali au uwezo gani mpaka pale unapohitajika kufanya hivyo.",
+            "Nguvu yako inatokana na utulivu wako na uwezo wa kuona fursa pale ambapo wengine wanaona matatizo."
+        ]
+    };
+
+    // ===== SIFA MPYA KWA KILA HERUFI (9 SIFA + 3 KAZI) =====
+    const SIFA_DB = {
+        'A': {
+            traits: [
+                "Jasiri – haogopi changamoto",
+                "Kiongozi wa asili – watu wanamfuata",
+                "Mwenye nguvu za kiroho",
+                "Mwaminifu na mnyoofu",
+                "Ana kipaji cha kutatua matatizo",
+                "Mkarimu kwa familia na jamii",
+                "Ana nidhamu ya kazi",
+                "Mwenye uvumilivu mkubwa",
+                "Ana bahati ya fedha na mafanikio"
+            ],
+            careers: ["Jeshi / Ulinzi", "Uongozi wa serikali", "Biashara ya kimataifa"]
+        },
+        'B': {
+            traits: [
+                "Mpole na mwenye upendo",
+                "Msiri – anajua kuhifadhi siri",
+                "Ana mvuto wa kipekee",
+                "Mwenye busara na hekima",
+                "Mkarimu na mwenye kujali",
+                "Ana uwezo wa kusikiliza",
+                "Mwenye subira",
+                "Anajenga amani popote",
+                "Anathamani familia"
+            ],
+            careers: ["Mshauri wa familia", "Daktari wa magonjwa ya akili", "Kiongozi wa dini"]
+        },
+        'C': {
+            traits: [
+                "Mbunifu na mvumbuzi",
+                "Mcheshi – anaburudisha",
+                "Mwenye kipaji cha sanaa",
+                "Ana akili ya haraka",
+                "Anapenda kujifunza mambo mapya",
+                "Mwerevu katika mawazo",
+                "Anachanganua kwa urahisi",
+                "Ana uwezo wa kuona fursa",
+                "Anavutia watu kwa urahisi"
+            ],
+            careers: ["Msanii (muziki, uchoraji)", "Mwandishi", "Mjasiriamali wa teknolojia"]
+        },
+        'D': {
+            traits: [
+                "Msimamizi mkali",
+                "Mchapakazi asiyechoka",
+                "Muaminifu kwa ahadi zake",
+                "Ana nidhamu ya hali ya juu",
+                "Hana uoga wa kushindwa",
+                "Ana utulivu wa ajabu",
+                "Anajenga imani kwa wengine",
+                "Ana uwezo wa kusimamia miradi",
+                "Anathamini muda"
+            ],
+            careers: ["Meneja wa miradi", "Mhasibu", "Mhandisi"]
+        },
+        'E': {
+            traits: [
+                "Anapenda uhuru",
+                "Mwenye akili nyepesi",
+                "Msafiri wa kwao",
+                "Anachanganua kwa haraka",
+                "Anavutwa na mageuzi",
+                "Ana uwezo wa kuelewa haraka",
+                "Anapenda kutafiti",
+                "Ana uwezo wa kufundisha",
+                "Anapenda mabadiliko"
+            ],
+            careers: ["Mwalimu", "Mtafiti", "Mkurugenzi wa utalii"]
+        },
+        'F': {
+            traits: [
+                "Mwenye huruma kubwa",
+                "Mlezi wa jamii",
+                "Mkarimu sana",
+                "Ana upendo usio na masharti",
+                "Anajitolea kwa wengine",
+                "Anathamini ustawi wa familia",
+                "Ana moyo wa kutoa",
+                "Anajenga amani",
+                "Anavutia watu walio na shida"
+            ],
+            careers: ["Mfanyakazi wa misaada", "Muuguzi", "Mwanasaikolojia"]
+        },
+        'G': {
+            traits: [
+                "Mwenye busara ya kale",
+                "Msiri na mwenye utulivu",
+                "Mtafiti wa maarifa",
+                "Ana imani thabiti",
+                "Anapenda kujifunza",
+                "Ana uwezo wa kushauri",
+                "Anathamini hekima",
+                "Anavutia wasomi",
+                "Anapenda kusoma"
+            ],
+            careers: ["Mshauri wa masuala ya dini", "Mwanafalsafa", "Mwandishi wa vitabu"]
+        },
+        'H': {
+            traits: [
+                "Mwenye bahati ya fedha",
+                "Mafanikio yanakuja kwa haraka",
+                "Ana nguvu ya kuvumilia",
+                "Ana heshima kubwa",
+                "Ana malengo ya mbali",
+                "Anajua kuwekeza",
+                "Anavutia fursa",
+                "Ana uwezo wa kuzalisha mali",
+                "Anathamini mafanikio"
+            ],
+            careers: ["Mfanyabiashara", "Mwekezaji", "Mkurugenzi wa kampuni"]
+        },
+        'I': {
+            traits: [
+                "Mwenye hisia kali",
+                "Mwenye moyo safi",
+                "Msanii wa asili",
+                "Anapenda uzuri",
+                "Ana mvuto wa kiroho",
+                "Anajali wengine",
+                "Anathamini ubinadamu",
+                "Anavutia watu kwa tabia yake",
+                "Ana uwezo wa kuponya kwa maneno"
+            ],
+            careers: ["Msanii wa maonyesho", "Mshauri wa ndoa", "Kiongozi wa kiroho"]
+        },
+        'J': {
+            traits: [
+                "Ana malengo makubwa",
+                "Mshindi asiyekata tamaa",
+                "Jasiri na hodari",
+                "Muaminifu kwa ahadi",
+                "Ana uwezo wa kuinuka",
+                "Anavutia washindi",
+                "Anathamini ushindi",
+                "Anapambana hadi mwisho",
+                "Ana nguvu ya kushawishi"
+            ],
+            careers: ["Mwanasiasa", "Mchezaji michezo", "Mkufunzi wa maisha"]
+        },
+        'K': {
+            traits: [
+                "Ana nguvu za ajabu",
+                "Mvuto mkubwa kwa watu",
+                "Msemaji wa kweli",
+                "Ana msimamo thabiti",
+                "Anavutia wafuasi",
+                "Anathamini uaminifu",
+                "Ana uwezo wa kusimamia",
+                "Anapenda ukweli",
+                "Ana nguvu ya kushawishi"
+            ],
+            careers: ["Mwanasheria", "Mchungaji", "Kiongozi wa jamii"]
+        },
+        'L': {
+            traits: [
+                "Mwenye upendo usio na masharti",
+                "Mkarimu kwa wote",
+                "Ana hekima ya asili",
+                "Msikivu na mwenye busara",
+                "Anavutia wenye shida",
+                "Anathamini wengine",
+                "Ana uwezo wa kutoa ushauri",
+                "Anajenga amani",
+                "Ana mvuto wa sura na tabia"
+            ],
+            careers: ["Mshauri wa maisha", "Mfanyakazi wa ustawi wa jamii", "Mwalimu wa watoto"]
+        },
+        'M': {
+            traits: [
+                "Mlezi wa familia",
+                "Ana busara ya kuendesha miradi",
+                "Mchapakazi",
+                "Ana heshima kubwa",
+                "Ana msimamo wa maadili",
+                "Anathamini umoja",
+                "Ana uwezo wa kuwaunganisha watu",
+                "Anajali wadogo",
+                "Ana uwezo wa kusimamia"
+            ],
+            careers: ["Meneja wa rasilimali watu", "Kiongozi wa kijiji", "Mratibu wa miradi"]
+        },
+        'N': {
+            traits: [
+                "Mbunifu wa mawazo mapya",
+                "Mkweli wa moyo",
+                "Ana ujasiri wa kusema ukweli",
+                "Anapenda mageuzi",
+                "Ana mvuto wa akili",
+                "Anathamini ukweli",
+                "Ana uwezo wa kubadilisha",
+                "Anavutia wasomi",
+                "Ana nguvu ya kushawishi"
+            ],
+            careers: ["Mwanaharakati", "Mwandishi wa habari", "Mtafiti wa masuala ya jamii"]
+        },
+        'O': {
+            traits: [
+                "Mwenye hekima kubwa",
+                "Ana utulivu wa roho",
+                "Ana imani thabiti",
+                "Ana msimamo kama mlima",
+                "Anasamehe kwa urahisi",
+                "Anathamini amani",
+                "Ana uwezo wa kushauri",
+                "Anavutia wenye shida",
+                "Ana nguvu ya kiroho"
+            ],
+            careers: ["Kiongozi wa dini", "Mshauri wa ndoa", "Mwanafalsafa"]
+        },
+        'P': {
+            traits: [
+                "Mchambuzi wa mambo",
+                "Ana busara ya kipekee",
+                "Msomi wa asili",
+                "Ana siri nzito",
+                "Ana mvuto wa utulivu",
+                "Anathamini maarifa",
+                "Ana uwezo wa kusoma mazingira",
+                "Anavutia watafiti",
+                "Ana nguvu ya kushauri"
+            ],
+            careers: ["Mtafiti", "Mchambuzi wa masoko", "Mwandishi wa ripoti"]
+        },
+        'R': {
+            traits: [
+                "Ana nguvu ya kazi",
+                "Mtafutaji shupavu",
+                "Jasiri kwenye vita",
+                "Muaminifu kwa wateja",
+                "Ana bidii isiyo na kifani",
+                "Anathamini jasho",
+                "Ana uwezo wa kufanya kazi nyingi",
+                "Anavutia wajasiriamali",
+                "Ana nguvu ya kushawishi"
+            ],
+            careers: ["Mkulima", "Mfanyabiashara mdogo", "Mhandisi wa ujenzi"]
+        },
+        'S': {
+            traits: [
+                "Mshindi wa mambo makubwa",
+                "Ana mvuto wa fedha",
+                "Ana akili ya biashara",
+                "Ana sauti yenye mamlaka",
+                "Ana uponyaji kwa maneno",
+                "Anathamini fursa",
+                "Ana uwezo wa kuvuta watu",
+                "Anavutia mafanikio",
+                "Ana nguvu ya kushawishi"
+            ],
+            careers: ["Mfanyabiashara", "Mkurugenzi wa uuzaji", "Mchungaji"]
+        },
+        'T': {
+            traits: [
+                "Ana nidhamu ya hali ya juu",
+                "Ana malengo makubwa",
+                "Mchapakazi wa maarifa",
+                "Msikivu kwa ushauri",
+                "Mtegemewa katika kazi",
+                "Anathamini muda",
+                "Ana uwezo wa kusimamia",
+                "Anavutia waajiri",
+                "Ana nguvu ya kutekeleza"
+            ],
+            careers: ["Meneja wa mradi", "Mhasibu", "Mratibu wa shughuli"]
+        },
+        'U': {
+            traits: [
+                "Ana bahati ya asili",
+                "Mvumbuzi wa njia mpya",
+                "Ana furaha ya kuambukiza",
+                "Anajipenda kwa usafi",
+                "Mkarimu na mwenye upendo",
+                "Anathamini uzuri",
+                "Ana uwezo wa kuvuta fursa",
+                "Anavutia watu wenye furaha",
+                "Ana nguvu ya kushawishi"
+            ],
+            careers: ["Msanii wa mitindo", "Mpiga picha", "Mratibu wa matukio"]
+        },
+        'V': {
+            traits: [
+                "Jasiri katika vita",
+                "Ana maono makubwa",
+                "Ana imani kwa Mungu",
+                "Ana nguvu ya kuvumilia",
+                "Ana mamlaka ya asili",
+                "Anathamini uongozi",
+                "Ana uwezo wa kuona mbele",
+                "Anavutia wafuasi",
+                "Ana nguvu ya kushawishi"
+            ],
+            careers: ["Kiongozi wa kijeshi", "Mchungaji", "Mkurugenzi wa shirika"]
+        },
+        'W': {
+            traits: [
+                "Ana busara ya kale",
+                "Anapenda ukweli",
+                "Mtafiti wa siri",
+                "Msiri mkubwa",
+                "Ana hekima ya kuepuka mitego",
+                "Anathamini ukweli",
+                "Ana uwezo wa kusoma watu",
+                "Anavutia washauri",
+                "Ana nguvu ya kushauri"
+            ],
+            careers: ["Mpelelezi", "Mwandishi wa historia", "Mshauri wa usalama"]
+        },
+        'Y': {
+            traits: [
+                "Anapenda uhuru wa akili",
+                "Mbunifu wa asili",
+                "Ana hisia safi",
+                "Mvumilivu katika magumu",
+                "Ana amani ya moyo",
+                "Anathamini uhuru",
+                "Ana uwezo wa kugeuza vitu",
+                "Anavutia wanafalsafa",
+                "Ana nguvu ya kushawishi"
+            ],
+            careers: ["Mwanafalsafa", "Mwandishi wa riwaya", "Mkufunzi wa maisha"]
+        },
+        'Z': {
+            traits: [
+                "Ana bahati ya fedha",
+                "Mshindi wa mashindano",
+                "Ana busara za kutosha",
+                "Msiri wa mali yake",
+                "Ana utulivu wa kuona fursa",
+                "Anathamini utajiri",
+                "Ana uwezo wa kumiliki",
+                "Anavutia matajiri",
+                "Ana nguvu ya kushawishi"
+            ],
+            careers: ["Mfanyabiashara mkubwa", "Mwekezaji wa hisa", "Meneja wa fedha"]
+        }
+    };
+
+    const NYOTA_DESC = {
+        1: { 
+            n: "NURU YAKO", 
+            h: [
+                "Mwanangu, kichwa chako kinaweza kuuma kama kuna mtu anapiga nyundo ndani yake, hii inatokana na akili yako kufanya kazi bila kupumzika.",
+                "Macho yako ni sehemu ya kwanza kuonyesha uchovu; unaweza kuhisi mwasho au unyevu unapokaa kwenye mwanga mkali wa simu au jua.",
+                "Zingatia shinikizo la damu (BP); asili yako inapenda haraka, jambo linalofanya moyo wako uende mbio sana na kuchoka mapema.",
+                "Neva zako za fahamu zinaweza kuhisi ganzi kidogo kwenye mikono, hii ni ishara kuwa damu haifiki vizuri kwenye ncha za vidole vyako.",
+                "Meno na fizi zako ni dhaifu kwa asili; epuka vitu vya baridi kali au moto sana vinavyoweza kushtua mishipa ya fahamu ya meno.",
+                "Kizunguzungu cha ghafla kinachokupata unapoinuka haraka ni ishara kuwa ubongo wako unahitaji hewa ya oksijeni zaidi.",
+                "Masikio yako yanaweza kuziba au kuhisi shinikizo kwa ndani, hasa unapokuwa na msongo wa mawazo au uchovu mwingi.",
+                "Kumbukumbu yako inaweza kukusaliti kidogo kwa kusahau vitu vidogo; hii ni ishara kuwa faili za akili yako zimejaa na zinahitaji mapumziko.",
+                "Kukosa usingizi (Insomnia) ni changamoto yako; akili yako huendelea kupiga ramli ya kesho hata kama mwili unataka kulala."
+            ], 
+            d: [
+                "Andaa juice ya matikiti maji: Lioshe tunda kwa nje kabla ya kulikata, kisha saga na unywe asubuhi kuongeza maji mwilini mwanangu.",
+                "Chukua mzizi wa tangawizi, uoshe vizuri kuondoa udongo, ukwanguwe na uchemshe. Kunywa asubuhi kufungua mishipa ya damu.",
+                "Chukua karoti tatu, zioshe kwa maji ya chumvi, zimenye na uzitafune jioni ili kuimarisha nuru ya macho yako.",
+                "Kula samaki walioandaliwa kwa mvuke: Protini hii ni mkombozi wa seli za ubongo wako zilizochoka kwa kufikiri kwingi.",
+                "Tumia mafuta ya zeituni (Olive oil) kijiko kimoja kwenye mboga baada ya kuipua jikoni ili kulainisha mirija ya moyo.",
+                "Mayai mawili ya kienyeji yaliyochemshwa vizuri yatakupa nguvu ya asili ya kupambana na uchovu wa asubuhi.",
+                "Mdalasini kwenye uji: Chukua unga wa mdalasini asilia, weka kijiko kidogo kwenye uji ili kutuliza neva zako.",
+                "Juice ya Beetroot: Osha beetroot moja, imenye na isage. Kunywa kutwa mara mbili kusafisha damu na kuiongeza mwanangu.",
+                "Nanasi lililoiva: Lioshe vizuri, limenye na ule nyama yake; hii itasaidia tumbo lako kusaga chakula kwa urahisi.",
+                "Asali mbichi: Chukua kijiko kimoja asubuhi bila kula kitu kingine ili kuongeza kinga yako ya mwili dhidi ya maradhi.",
+                "Parachichi nusu: Lioshe na ule nusu parachichi kila siku; mafuta yake ni mkombozi wa ngozi na moyo wako.",
+                "Mbegu za maboga: Zikaushe na kuzikaanga bila mafuta, kisha tafuna kiganja kimoja kuimarisha neva na akili.",
+                "Papai lililoiva: Osha, menya na ule vipande vikubwa jioni ili kusafisha utumbo na kupata choo laini.",
+                "Mboga za mchicha: Osha jani kwa jani chini ya maji ya bomba, zipike kwa dakika tano tu ili usipoteze hekima ya asili iliyomo.",
+                "Kunywa maji glasi 10: Hakikisha ni maji yaliyochemshwa na kupoa ili kusafisha figo zako kutokana na sumu za vyakula.",
+                "Komamanga: Pasua na ule mbegu zake; hili ni tunda la hekima linalozuia kansa na kusafisha mishipa ya fahamu.",
+                "Epuka kahawa kali: Kafeini inashtua moyo wako; badala yake kunywa maji ya madafu yenye virutubisho asilia.",
+                "Maziwa ya mgando (Yogurt): Kunywa glasi moja mchana ili kuimarisha mfumo wa kinga ndani ya tumbo lako.",
+                "Bamia tano: Zioshe, zichemshe na kunywa maji yake yenye utelezi; hii ni tiba ya asili ya magoti na viungo vya mwili.",
+                "Pilipili mtama: Weka kidogo kwenye chakula chako cha mchana; inasaidia kufungua mirija ya damu inayoelekea kwenye moyo.",
+                "Matunda ya zambarau: Yaoshe kwa maji ya vuguvugu na ule; yana virutubisho vinavyozuia seli za mwili zisizeeke haraka.",
+                "Limao na maji ya moto: Kamua limao moja kwenye maji ya moto asubuhi ili kuchoma mafuta mabaya mwilini mwako.",
+                "Kabeji mbichi: Osha jani moja moja na ule kama saladi; inatengeneza ukuta wa kinga dhidi ya vidonda vya tumbo.",
+                "Ndizi mbivu mbili: Zile asubuhi ili kupata madini ya potasiamu yanayolinda misuli yako isikakamae.",
+                "Njegere mbichi: Zichemshe na kula kama mboga; protini yake ni mkombozi wa tishu za mwili zilizojeruhiwa.",
+                "Supu ya mifupa: Chemsha mifupa ya ng'ombe kwa saa kadhaa na kunywa supu hiyo kuimarisha mifupa yako na meno.",
+                "Viazi vitamu: Vioshe na kuchemsha na maganda yake; sukari yake ni asilia na haileti madhara kwenye damu.",
+                "Majani ya kunde: Osha vizuri na uyapike kidogo; ni dawa ya asili ya kusafisha macho na kuimarisha ngozi mwanangu.",
+                "Unga wa lishe asilia: Tumia mchanganyiko wa ulezi na ngano ili kuupa mwili wako hekima ya nguvu ya asili.",
+                "Chai ya mchaichai: Osha majani na uchemshe; kunywa mchana kutuliza akili na kuondoa harufu mbaya ya kinywa."
+            ]
+        },
+        2: { 
+            n: "NURU YAKO", 
+            h: [
+                "Mwanangu, koo lako linaweza kuhisi uchungu au kutoa sauti ya kukwaruza, hii ni kwa sababu asili yako imebeba nguvu ya usemi.",
+                "Tezi (Thyroid) inaweza kusababisha mwili wako kubadilika uzito haraka sana; asili yako inakufanya ule zaidi unapokuwa na stress.",
+                "Maumivu ya shingo yanayotokana na kukaa sehemu moja kwa muda mrefu yanaweza kukutesa sana mwanangu.",
+                "Mabega yako yanaweza kukakamaa (Tension); hii inatokana na kubeba mizigo ya mawazo ya familia yako kichwani.",
+                "Kuna hatari ya kuongezeka kwa sukari mwilini (Diabetes) ikiwa utapenda kula vitu vyenye sukari ya kiwandani mfululizo.",
+                "Uzito wa mwili (Obesity) unaweza kuongezeka kwa haraka; asili yako inapenda utulivu na kula chakula kitamu mwanangu.",
+                "Mafua ya mara kwa mara na kikohozi kikavu vinaweza kukupata mazingira yako yakiwa na vumbi au baridi kali.",
+                "Masikio yako yanaweza kuziba au kutoa mlio wa siri kwa ndani; hii ni ishara kuwa unahitaji kupumzisha mwili wako.",
+                "Maumivu ya mgongo (Kiuno) yatakupata unapoinama sana; asili yako inataka uwe na mwendo wa taratibu mwanangu."
+            ], 
+            d: [
+                "Apple moja kila siku: Lioshe kwa maji ya moto kidogo kuondoa nta, kisha ule asubuhi kusafisha tumbo na koo.",
+                "Karanga mbichi: Osha kiganja kimoja na uzile; mafuta yake ni mkombozi wa sauti yako na koo mwanangu.",
+                "Limao na asali: Kamua limao moja kwenye glasi ya maji vuguvugu, weka asali kijiko kimoja na unywe asubuhi.",
+                "Supu ya kuku wa kienyeji: Mchemshe kuku na tangawizi na kitunguu swaumu; kunywa supu hii kuimarisha kinga ya koo.",
+                "Ndizi mbivu: Ile asubuhi saa tano; inakupa nguvu ya utulivu na kuzuia mwili wako usichoke haraka kazini.",
+                "Mihogo ya kuchemsha: Osha na kuchemsha; chakula hiki ni mkombozi wa nguvu yako ya kudumu kwa siku nzima.",
+                "Mapera mawili: Yaoshe vizuri na ule; tunda hili lina vitamini C nyingi inayolinda koo lako dhidi ya maambukizi.",
+                "Bamia mbichi: Zioshe na kukatakatwa kidogo, ule kama saladi; utelezi wake unalainisha viungo vya shingo.",
+                "Dengu za kuchemsha: Kula dengu badala ya nyama nyekundu; ni rafiki wa moyo wako na haziongezi mafuta mabaya.",
+                "Maziwa ya freshi: Yachemshe vizuri na unywe glasi moja jioni ili kulainisha koo na kukupa amani mwanangu.",
+                "Zabibu: Zioshe kwa maji mengi na ule kiganja kimoja; sukari yake ni ya asili na itakupa nguvu ya haraka.",
+                "Chai ya mchaichai: Osha majani vizuri na uchemshe; inasaidia kuondoa gesi na harufu mbaya mwilini mwako.",
+                "Kisamvu: Osha vizuri na ukichemshe kikaive; kinarutubisha damu yako na kuondoa sumu za mwilini.",
+                "Viazi vikuu: Vioshe na kuchemsha; chakula hiki ni kizito na kitalinda mwili wako dhidi ya njaa ya ghafla.",
+                "Maji lita tatu: Kunywa maji mengi mwanangu; asili yako inahitaji maji ili ngozi na figo zako ziwe safi.",
+                "Juice ya karoti: Osha na saga karoti; kunywa jioni ili kusaidia macho yako yaone vizuri mwanangu.",
+                "Vitunguu swaumu: Meza punje mbili kila jioni baada ya kuzikatakata; hii ni kinga kuu dhidi ya maradhi ya koo.",
+                "Ugali wa dona: Usitumie sembe; dona ina nyuzi zinazosaidia tumbo lako lisipate shida ya kukosa choo.",
+                "Papai la sukari: Lioshe na ule jioni; itakusaidia kulala vizuri na kuondoa uchovu wa siku nzima.",
+                "Mafuta ya zeituni: Weka kijiko kimoja kwenye saladi; inazuia mishipa ya shingo isikaze na kuleta maumivu.",
+                "Mboga za kijani: Osha jani kwa jani ili kuondoa mchanga; kula mchicha kwa wingi ili kuimarisha damu.",
+                "Beetroot: Osha na uichemshe kidogo kisha ule; inasaidia kusafisha ini lako na kuongeza damu safi mwanangu.",
+                "Mdalasini kwenye uji: Harufu yake inatuliza akili na kuzuia msongo wa mawazo unaoweza kukupata kazini.",
+                "Maji ya madafu: Kunywa dafu moja kila wiki; maji haya yana madini yanayolinda mwili wako usichoke.",
+                "Komamanga: Pasua na ule mbegu zake; tunda hili ni mkombozi wa tezi yako (thyroid) mwanangu.",
+                "Green tea: Kunywa asubuhi ili kusaidia kuchoma mafuta ya ziada na kukuweka katika muonekano mzuri.",
+                "Viazi mbatata: Vioshe na kuvichemsha na maganda yake; maganda yana madini muhimu kwa afya ya ngozi.",
+                "Matikiti maji: Ule sehemu ile nyeupe kwa ndani; ina virutubisho vinavyolinda figo zako mwanangu.",
+                "Unga wa lishe: Changanya ngano na ulezi; kunywa uji huu ukiwa na asali badala ya sukari ya kiwandani.",
+                "Majani ya kunde: Yaoshe vizuri na uyapike kidogo; chakula hiki ni mkombozi wa mifupa yako ya kiuno."
+            ]
+        },
+        3: { 
+            n: "NURU YAKO", 
+            h: [
+                "Mwanangu, mapafu yako ni sehemu dhaifu; unaweza kuhisi kifua kubana au kukosa hewa unapokuwa na hofu.",
+                "Neva zako za fahamu ziko wazi sana; asili yako inakufanya uhisi mtikisiko wa akili haraka sana.",
+                "Kupumua kwa shida kunaweza kukupata mazingira yakiwa na unyevunyevu au harufu kali mwanangu.",
+                "Mikono na viganja vinaweza kuhisi ganzi au kuuma; hii ni kwa sababu unatumia mikono yako sana kufanya kazi.",
+                "Kifua chako kinaweza kuhisi kama kimefungwa kwa kamba; hii inatokana na kutotoa siri zako na kuzificha ndani.",
+                "Maumivu ya mbavu yanaweza kukupata pale unapocheka sana au kupiga chafya; neva za mbavu zako ni nyembamba.",
+                "Macho yako yanachoka haraka kwa sababu unatazama mambo mengi kwa wakati mmoja mwanangu.",
+                "Kucha zako zinaweza kuwa na madoa meupe au kukatika; hii ni ishara kuwa mwili unahitaji madini ya asili.",
+                "Uchovu wa akili (Mental fatigue) ni adui yako; unawaza mambo mawili kwa wakati mmoja, jambo linalochosha ubongo."
+            ], 
+            d: [
+                "Juice ya machungwa: Osha chungwa, likamue na unywe asubuhi; vitamini C itaimarisha mapafu yako mwanangu.",
+                "Zabibu nyekundu: Zioshe vizuri na ule kiganja kimoja; sukari yake asilia ni chakula cha neva zako za fahamu.",
+                "Mzizi wa tangawizi: Osha na uchemshe na majani ya mchai; unywe jioni ili kufungua mfumo wa upumuaji.",
+                "Kitunguu swaumu: Osha na kumenya punje moja; itafune asubuhi ili kusafisha mirija ya mapafu yako.",
+                "Samaki sato: Andaa kwa kuchemsha; mafuta ya samaki ni mkombozi wa akili yako inayofikiri kwingi.",
+                "Mafuta ya ufuta: Weka kijiko kimoja kwenye chakula; inasaidia kulainisha neva na kuzuia ganzi mwanangu.",
+                "Mdalasini mbichi: Osha kijiti na uchemshe; kunywa maji yake kuondoa msongo wa mawazo na hofu.",
+                "Juice ya beetroot: Osha na saga; itakusaidia kuongeza oksijeni kwenye damu inayopeleka hewa mapafuni.",
+                "Nanasi nusu: Lioshe kwa nje kisha menya; ule mchana ili kusaidia mwili wako kuondoa sumu za hewa.",
+                "Maziwa ya mbuzi: Yachemshe vizuri na unywe; maziwa haya ni mepesi na yanalinda mapafu yako mwanangu.",
+                "Ndizi sukari tatu: Zile mchana upate nguvu ya haraka ya akili; potasiamu yake inatuliza neva zako.",
+                "Njegere mbichi: Osha na uchemshe; protini yake ni mkombozi wa tishu za kifua chako mwanangu.",
+                "Supu ya kuku wa kienyeji: Mchemshe na pilipili manga kidogo; supu hii inakausha unyevu kwenye mapafu.",
+                "Viazi mviringo: Vioshe na kuvichemsha na maganda; vina madini yanayolinda neva za mikono yako.",
+                "Maji glasi 12: Kunywa maji mengi; asili yako inahitaji maji ili kusafisha mfumo wa damu na mapafu.",
+                "Mbegu za mlonge: Tafuna mbegu mbili zilizokaushwa jioni; ni dawa kuu ya kusafisha sumu mwilini mwako.",
+                "Epuka soda: Gesi ya soda inabana kifua chako; badala yake kunywa juice ya embe uliyosaga mwenyewe.",
+                "Mayai ya kienyeji: Chemsha mawili ule asubuhi; yanakupa nguvu ya kutosha ya kupambana na uchovu.",
+                "Karoti mbichi: Zioshe kwa maji ya chumvi na uzitafune; vitamini A inaimarisha macho yako mwanangu.",
+                "Mboga za mchicha: Osha jani kwa jani; mchicha una madini ya chuma yanayoboresha usafiri wa oksijeni.",
+                "Asali ya nyuki wadogo: Chukua kijiko kimoja kila asubuhi; inalinda koo na mapafu dhidi ya bakteria.",
+                "Parachichi moja: Lioshe na ule; mafuta yake ni rafiki wa mishipa ya fahamu inayoelekea mikononi.",
+                "Papai lililoiva: Lioshe na ule jioni; inasaidia tumbo lako lisivimbe na kubana kifua chako mwanangu.",
+                "Bamia tano: Zioshe na kuzikatakata kwenye mboga; utelezi wake unalinda viungo vyako visiume.",
+                "Zambarau: Yaoshe vizuri na ule; tunda hili lina virutubisho vinavyoimarisha kinga ya mwili wako.",
+                "Limao na asali: Kunywa kwenye maji vuguvugu asubuhi ili kuondoa mafuta yanayobana upumuaji.",
+                "Kabeji mbichi: Osha na ule kama saladi; inasaidia kutuliza mfumo wako wa neva unapokuwa na hofu.",
+                "Ugali wa dona: Dona ina nyuzi nyuzi zinazofanya damu yako iwe safi na yenye nguvu mwanangu.",
+                "Chai ya mdimu: Osha majani ya mdimu na uchemshe; kunywa kabla ya kulala ili kutuliza akili yako.",
+                "Karanga mbichi: Tafuna kiganja kimoja; mafuta yake yanasaidia akili yako ibaki kuwa nyepesi mwanangu."
+            ]
+        },
+        4: { 
+            n: "NURU YAKO", 
+            h: [
+                "Mwanangu, tumbo lako ni nyeti sana; unaweza kuhisi kama kuna kitu kinachemka ndani, hii inatokana na hisia zako.",
+                "Gesi tumboni (Flatulence) ni changamoto yako kuu; asili yako inakufanya uhifadhi hewa nyingi tumboni.",
+                "Vidonda vya tumbo (Ulcers) vinaweza kukupata ikiwa utaruhusu huzuni na mawazo yatawale moyo wako.",
+                "Kifua chako kinaweza kuhisi unyevu au mzigo, hasa wakati wa usiku au unapokuwa na hofu mwanangu.",
+                "Mfumo wako wa damu unaweza kuwa mzito, jambo linaloweza kusababisha miguu kuvimba kidogo mwanangu.",
+                "Unyogovu (Stress) huenda moja kwa moja kwenye tumbo; ukikasirika, unahisi njaa inapotea au tumbo kuuma.",
+                "Ini lako linaweza kuhitaji msaada wa kusafisha sumu; asili yako inapenda kuhifadhi mambo mengi moyoni na mwilini.",
+                "Uchovu wa mwili wa ghafla unakuja unapohisi hupendwi au huna usalama katika mazingira yako mwanangu.",
+                "Matatizo ya uzazi yanaweza kusumbua ikiwa hutazingatia usafi wa asili na vyakula vya kuimarisha nyonga."
+            ], 
+            d: [
+                "Juice ya papai: Osha papai, menya na usage; kunywa glasi moja mchana ili kulainisha utumbo wako mwanangu.",
+                "Mdalasini kwenye maji: Chemsha kijiti cha mdalasini na unywe maji yake; inatibu gesi na maumivu ya tumbo.",
+                "Tikiti maji: Lioshe tunda kwa nje kabla ya kukata; kula vipande vingi asubuhi ili kusafisha figo mwanangu.",
+                "Mbegu za chia: Weka kijiko kimoja kwenye maji, acha saa moja kisha unywe; ni mkombozi wa utumbo wako.",
+                "Vitunguu swaumu: Osha punje mbili na uzikatakata; meza jioni kulinda ini lako dhidi ya sumu.",
+                "Samaki mweupe: Andaa kwa kuchemsha na limao; protini yake ni nyepesi na rafiki kwa tumbo lako.",
+                "Tui la nazi asilia: Kunywa glasi ndogo ya tui lililokamuliwa safi; linatuliza moto wa vidonda vya tumbo.",
+                "Chai ya mchaichai: Osha majani na uchemshe; kunywa mchana ili kuondoa unyevu na gesi tumboni mwanangu.",
+                "Juice ya beetroot: Osha na saga; inasaidia kuongeza damu safi na kuimarisha ini lako mwanangu.",
+                "Apple moja: Lioshe kwa maji ya chumvi na ule jioni; nyuzi nyuzi zake zitasafisha utumbo wako.",
+                "Mbegu za malenge: Zikaushe na kuzitafuna; zina madini ya zinki yanayoimarisha mfumo wako wa uzazi.",
+                "Ugali wa dona: Epuka sembe; dona inasaidia tumbo lako kusaga chakula bila kuleta gesi mwanangu.",
+                "Bamia mbichi: Zioshe na uzikatakata, loweka kwenye maji na unywe utelezi wake; ni dawa ya tumbo.",
+                "Tangawizi na asali: Chemsha tangawizi, weka asali na unywe asubuhi kuamsha mmeng'enyo wako.",
+                "Komamanga: Pasua na ule mbegu zake; tunda hili linazuia uvimbe ndani ya utumbo na kifua mwanangu.",
+                "Chai ya kijani (Green tea): Kunywa asubuhi ili kusafisha mirija ya damu na kuzuia miguu kuvimba.",
+                "Kabeji nyeupe: Osha jani kwa jani na usage upate juice kidogo; kunywa kutibu vidonda vya tumbo.",
+                "Ndizi mbivu mbili: Zile jioni ili kutuliza neva za tumbo na kukupa usingizi mnono mwanangu.",
+                "Dengu za kuchemsha: Kula dengu badala ya maharage; dengu hazileti gesi na zina protini nyingi.",
+                "Supu ya samaki: Mchemshe samaki na kitunguu maji na nyanya; supu hii inaimarisha kifua chako.",
+                "Viazi vitamu: Vioshe na kuchemsha na maganda yake; ni mkombozi wa nguvu ya asili ya mwili wako.",
+                "Majani ya kunde: Osha vizuri na uyapike kidogo tu; yana madini yanayolinda macho na ngozi mwanangu.",
+                "Maji glasi 10: Kunywa maji yaliyochemshwa na kupoa; asili yako inahitaji maji mengi ili isikauke.",
+                "Asali mbichi: Kijiko kimoja asubuhi kinatengeneza ukuta wa kinga dhidi ya asidi tumboni mwako.",
+                "Parachichi nusu: Lioshe na ule; mafuta yake yanasaidia kuzuia maumivu ya tumbo yanayotokana na stress.",
+                "Karoti mbichi: Zioshe na kumenya, kisha uzile; zinasaidia kusafisha damu na kuipa ngozi nuru mwanangu.",
+                "Mboga za mchicha: Osha kwa maji mengi na upike muda mfupi; mchicha unaimarisha kinga ya mwili wako.",
+                "Mayai ya bata: Ikiwa unayapata, yachemshwe vizuri; yana nguvu kubwa ya kuimarisha mfumo wa uzazi.",
+                "Limao na maji vuguvugu: Kamua limao moja kwenye maji asubuhi ili kusafisha sumu zote za jana.",
+                "Unga wa lishe ya ulezi: Kunywa uji mzito wa ulezi kila asubuhi ili kuupa mwili wako hekima ya nguvu."
+            ]
+        },
+        5: { 
+            n: "NURU YAKO", 
+            h: [
+                "Mwanangu, moyo wako ni injini kubwa ya asili yako; unaweza kuhisi mapigo kwenda mbio unapofurahi au kukasirika.",
+                "Mgongo wako, hasa eneo la kati, unaweza kuhisi uchovu au maumivu; hii ni kwa sababu unasimama kidete maishani.",
+                "Uti wa mgongo unahitaji umakini; asili yako inakufanya uwe na msimamo mkali, jambo linaloweza kukaza misuli ya uti wa mgongo.",
+                "Shinikizo la damu (BP) ni jambo la kuchunga; asili yako inapenda mamlaka, jambo linaloweza kuupa moyo kazi nyingi.",
+                "Maumivu ya kiuno yanaweza kukupata pale unapojaribu kubeba majukumu yote wewe mwenyewe mwanangu.",
+                "Mzunguko wa damu unaweza kuwa na changamoto mazingira yakiwa ya joto sana au ukiwa umechoka mno mwanangu.",
+                "Macho yako yanaweza kufifia nuru ikiwa hutaingiza vitamini A ya asili; asili yako inategemea uoni wa mbali.",
+                "Maumivu ya mbavu yanaweza kutokea unapokuwa na hasira zilizofichika; hasira hukaba kifua cha Simba mwanangu.",
+                "Uchovu wa moyo (Cardiac fatigue) hutokea pale unapohisi juhudi zako hazitambuliwi na watu wako wa karibu."
+            ], 
+            d: [
+                "Juice ya zabibu: Osha zabibu kwa maji mengi, zisage na unywe; sukari yake asilia inalinda moyo wako mwanangu.",
+                "Vitunguu swaumu: Osha punje mbili, zikate ndogo na ule kwenye chakula; ni mkombozi wa shinikizo la damu.",
+                "Machungwa mawili: Yaoshe vizuri na ule nyama yake asubuhi; vitamini C inaimarisha kuta za mishipa ya damu.",
+                "Mbegu za alizeti: Zikaange kidogo bila mafuta na uzitafune; mafuta yake ni rafiki wa uti wa mgongo mwanangu.",
+                "Maji lita tatu: Kunywa maji mengi yaliyochemshwa na kupoa ili kuweka damu yako katika hali ya wepesi.",
+                "Tunda la manjano (Embe): Lioshe na ule; rangi ya manjano mwanangu ina virutubisho vinavyoimarisha moyo.",
+                "Kitunguu maji: Kile kikiwa kibichi kwenye saladi; kinasaidia kusafisha damu na kuzuia damu isigande mwanangu.",
+                "Samaki wa sangara: Andaa kwa kuchemsha; mafuta ya samaki huyu ni tiba ya asili ya viungo vya mgongo.",
+                "Kuku wa kienyeji: Mchemshe na tangawizi; protini yake inaimarisha misuli inayoshikilia uti wa mgongo.",
+                "Nyanya mbichi: Zioshe kwa maji ya chumvi na ule mbili kila siku; zina lycopene inayolinda moyo wako.",
+                "Apple nyekundu: Lioshe kwa maji safi na ule asubuhi; tunda hili linasaidia kusafisha mfumo wa mmeng'enyo.",
+                "Asali ya nyuki wadogo: Kijiko kimoja asubuhi kinakupa nguvu ya utukufu na kuimarisha kinga yako mwanangu.",
+                "Parachichi moja: Lioshe na ule; mafuta yake ni mkombozi wa ngozi yako na mzunguko wa damu mwanangu.",
+                "Maboga ya kuchemsha: Yaoshe na kuchemsha na maganda yake; ni chakula cha hekima kwa ajili ya macho yako.",
+                "Wali wa brown (Husk rice): Tumia mchele usiopitishwa kwenye mashine sana ili upate nyuzi nyuzi za asili.",
+                "Maziwa ya freshi: Yachemshe vizuri na unywe jioni ili kutuliza neva za moyo wako mwanangu.",
+                "Bamia tano: Zioshe na uzikatakate kwenye mboga; utelezi wake unalainisha misuli ya kiuno chako.",
+                "Pilipili hoho: Osha na ule kwenye saladi; tunda hili linasaidia kuchochea mzunguko wa damu mwilini.",
+                "Mdalasini kwenye chai: Weka unga wa mdalasini asilia; harufu yake inatuliza hasira na msongo wa mawazo.",
+                "Kabeji nyeupe: Osha jani kwa jani na ule; inasaidia kusafisha tumbo na kuzuia sumu zisiende kwenye damu.",
+                "Ndizi mbivu mbili: Zile mchana ili kupata potasiamu; madini haya ni chakula kikuu cha moyo wako mwanangu.",
+                "Njegere kavu: Zichemshe na ule kama mboga; zina madini yanayolinda mifupa ya uti wa mgongo.",
+                "Supu ya mifupa ya ng'ombe: Chemsha mifupa saa tatu na unywe supu hiyo; ni dawa ya viungo vyako vyote.",
+                "Viazi mbatata: Vioshe na kuchemsha; ni chakula chepesi kisichoupa moyo wako kazi ya ziada kusaga.",
+                "Kisamvu: Osha vizuri na upike kikaive; kinarutubisha damu yako na kuongeza kinga ya asili mwanangu.",
+                "Tangawizi mbichi: Osha na uisage kwenye juice ya nanasi; inasaidia kuamsha mzunguko wa damu kwenye ncha za vidole.",
+                "Beetroot: Osha na uichemshe kidogo; inasaidia kusafisha ini ambalo ni kiwanda cha damu yako mwanangu.",
+                "Limao na maji vuguvugu: Kunywa asubuhi ili kuondoa mafuta yaliyoganda kwenye mishipa ya moyo.",
+                "Mafuta ya zeituni: Tumia kwenye mboga baada ya kupikwa; yanazuia seli za moyo zisizeeke haraka.",
+                "Unga wa lishe ya ngano: Kunywa uji uliopikwa na mdalasini na asali ili kupata hekima ya nguvu ya Simba."
+            ]
+        },
+        6: { 
+            n: "NURU YAKO", 
+            h: [
+                "Mwanangu, utumbo wako ni sehemu inayopokea msongo wa mawazo; ukihangaika akilini, tumbo huanza kuunguruma.",
+                "Mfumo wako wa chakula ni nyeti; unaweza kupata mzio (allergy) wa vyakula fulani kirahisi sana mwanangu.",
+                "Neva zako za akili zinafanya kazi kwa usahihi mkubwa, jambo linaloweza kusababisha uchovu wa neva (Nervous exhaustion).",
+                "Maumivu ya tumbo la chini yanaweza kukupata ikiwa hutaweka utaratibu mzuri wa kula chakula mwanangu.",
+                "Mzio (Allergy) ya ngozi au hewa inaweza kukupata ikiwa mazingira yako hayatakuwa safi kama asili yako inavyotaka.",
+                "Kukosa choo (Constipation) ni adui yako; asili yako inahitaji nyuzi nyuzi (fiber) nyingi ili kusukuma mabaki ya chakula.",
+                "Maumivu ya nyonga yanaweza kutokea pale unapokuwa umekaa kwa muda mrefu ukifanya kazi kwa umakini sana.",
+                "Uchovu wa macho unatokana na kuchunguza kila undani wa jambo; akili yako inachoka macho mwanangu.",
+                "Matatizo ya kucha kuwa na rangi ya ajabu au kupasuka ni ishara kuwa utumbo wako haunyonya madini vizuri."
+            ], 
+            d: [
+                "Juice ya karoti: Osha karoti, zimenye na usage; kunywa glasi moja asubuhi kuimarisha macho na ngozi.",
+                "Mchicha mbichi: Osha jani kwa jani kwa maji ya chumvi, kisha saga upate juice glasi ndogo asubuhi kusafisha utumbo.",
+                "Apple moja: Lioshe vizuri na ule; tunda hili lina pectin inayosaidia utumbo wako kufanya kazi kwa nidhamu.",
+                "Mbegu za flax (Linseed): Loweka kijiko kimoja kwenye maji usiku, unywe asubuhi ili kulainisha choo mwanangu.",
+                "Maji glasi 12: Kunywa maji mengi yaliyochemshwa; asili yako inahitaji usafi wa ndani mwanangu.",
+                "Asali mbichi: Kijiko kimoja jioni kinasaidia kutuliza neva zako ili upate usingizi wa amani.",
+                "Matunda ya kijani (Zambarau au Zabibu): Yaoshe na ule; yana virutubisho vinavyozuia uvimbe kwenye utumbo.",
+                "Vitunguu maji na swaumu: Viweke kwenye saladi yako; vinasaidia kuua bakteria wabaya ndani ya tumbo.",
+                "Kamba (Shrimp) au dagaa: Zichemshe vizuri; zina madini ya zinki yanayoimarisha kucha na ngozi yako.",
+                "Mafuta ya zeituni: Tumia kijiko kimoja kila siku; inasaidia kulainisha utumbo na kuzuia vidonda vya tumbo.",
+                "Mayai mawili kwa wiki: Yachemshwe yaive; yanakupa protini safi isiyochosha utumbo wako mwanangu.",
+                "Mdalasini kwenye uji: Inasaidia kuzuia tumbo kujaa gesi na kuleta amani ya mmeng'enyo mwanangu.",
+                "Juice ya kabeji: Osha kabeji, isage na uichuje; kunywa glasi ndogo kutibu mzio na vidonda vya tumbo.",
+                "Nanasi nusu: Lioshe kabla ya kumenya; ule nyama yake ili kusaidia mmeng'enyo wa protini nzito mwilini.",
+                "Parachichi nusu: Lioshe na ule; mafuta yake ni mkombozi wa neva zako zilizochoka mwanangu.",
+                "Mbegu za tikiti: Zikaushe na kusaga kuwa unga; weka kwenye chakula kuimarisha kinga ya asili.",
+                "Papai lililoiva: Lioshe na ule vipande vikubwa asubuhi; ndio mkombozi pekee wa choo chako mwanangu.",
+                "Unga wa lishe ya ulezi: Kunywa uji huu ukiwa na maziwa kidogo ili kupata nguvu ya nidhamu mwilini.",
+                "Maziwa ya mgando (Yogurt): Kunywa mchana ili kuongeza bakteria wazuri (probiotics) ndani ya utumbo wako.",
+                "Bamia tano: Zioshe, zichemshe na ule; utelezi wake unalinda ukuta wa utumbo usichubuke.",
+                "Pilipili mtama kidogo: Inasaidia kuchochea tumbo kufanya kazi yake kwa wakati mwanangu.",
+                "Zabibu kavu (Raisins): Tafuna kiganja kimoja; zina madini ya chuma yanayoboresha damu na ngozi.",
+                "Limao na maji ya moto: Kunywa asubuhi ili kuondoa sumu (detox) ambazo zimejificha kwenye utumbo.",
+                "Nyanya mbichi: Zioshe na ule mbili kila siku kama saladi; zinaimarisha kuta za seli za mwili wako.",
+                "Ndizi mbivu moja: Ile asubuhi upate nguvu ya haraka ya akili inayohitajika kufanya kazi zako.",
+                "Njegere kavu: Zichemshe na ule; zina nyuzi nyingi zinazozuia tumbo lako lisivimbe mwanangu.",
+                "Supu ya kuku wa kienyeji: Mchemshe na kitunguu swaumu; ni dawa ya asili ya kuimarisha kinga ya mwili.",
+                "Viazi vitamu: Vioshe na kuchemsha na maganda; ni mkombozi wa sukari asilia mwilini mwako.",
+                "Majani ya mchicha: Osha vizuri na uyapike kwa dakika chache tu; ni dawa ya asili ya kusafisha macho.",
+                "Maji ya madafu: Kunywa madafu mara mbili kwa wiki ili kupoza joto la ndani la utumbo mwanangu."
+            ]
+        },
+        7: { 
+            n: "NURU YAKO)", 
+            h: [
+                "Mwanangu, figo zako ni mizani ya mwili wako; ukikosa kunywa maji, utahisi uchungu kwenye mgongo wa chini.",
+                "Maumivu ya nyonga yanaweza kukupata pale unapojaribu kubeba mambo mengi kwa wakati mmoja.",
+                "Ngozi yako ni nyeti; asili yako inataka uwe msafi na unywe maji ili ngozi isipoteze nuru yake mwanangu.",
+                "Kibofu cha mkojo kinaweza kusumbua ikiwa utakuwa na tabia ya kuzuia mkojo kwa muda mrefu mwanangu.",
+                "Sukari mwilini inaweza kupanda ikiwa utapenda kula vyakula vya tamu tamu sana; asili yako inataka uwiano.",
+                "Maumivu ya mgongo wa chini (Lumbago) ni ishara kuwa figo zako zinahitaji msaada wa maji safi.",
+                "Uchovu wa mwili wa ghafla unatokana na kukosekana kwa usawa wa madini mwilini mwako mwanangu.",
+                "Mzunguko wa damu unaweza kuwa na changamoto mazingira yakiwa ya baridi sana mwanangu.",
+                "Matatizo ya koo yanaweza kukupata ikiwa hutaweka sawa sauti yako na kupumzika kusema sana."
+            ], 
+            d: [
+                "Juice ya apple: Osha apple, usage na unywe; tunda hili ni mkombozi mkuu wa figo zako mwanangu.",
+                "Zabibu kumi: Zioshe vizuri na ule jioni; sukari yake inasaidia kuleta uwiano wa madini kwenye damu.",
+                "Mbegu za malenge: Zikaange na ule kiganja kimoja; zina madini ya asili yanayolinda kibofu chako.",
+                "Maji lita nne: Kunywa maji mengi mwanangu; figo zako zinategemea maji ili kusafisha sumu mwilini.",
+                "Tangawizi na limao: Chemsha tangawizi na kamua limao; kunywa asubuhi kusafisha mzunguko wa damu.",
+                "Matunda ya rangi zote: Osha na ule mchanganyiko wa matunda; asili yako inataka mchanganyiko wa virutubisho.",
+                "Kitunguu maji: Kile kibichi kwenye chakula; kinasaidia kusafisha damu na kulinda ngozi yako mwanangu.",
+                "Samaki wa maji baridi: Andaa kwa mvuke; mafuta yake ni tiba ya asili ya viungo vya nyonga.",
+                "Mafuta ya ufuta: Weka kijiko kimoja kwenye mboga; inasaidia ngozi yako kubaki na nuru ya asili.",
+                "Mayai ya kienyeji: Chemsha mawili ule asubuhi; yanakupa nguvu ya usawa mwanangu.",
+                "Mdalasini: Weka kwenye chai au uji; inasaidia kudhibiti kiwango cha sukari kwenye damu yako.",
+                "Juice ya beetroot: Osha na saga; inasaidia kusafisha figo na kuongeza damu safi mwilini mwako.",
+                "Nanasi nusu: Lioshe na ule; enzyme yake inasaidia kuondoa uvimbe kwenye kibofu cha mkojo.",
+                "Asali mbichi: Chukua kijiko kimoja kila jioni; inatuliza akili na kuleta usawa wa hisia mwanangu.",
+                "Parachichi moja: Lioshe na ule; mafuta yake ni mkombozi wa ngozi na viungo vya mgongo.",
+                "Mbegu za tikiti: Zikaushe na ule; zina madini yanayosaidia figo zako kufanya kazi kwa nidhamu.",
+                "Papai sukari: Lioshe na ule asubuhi; papai ni rafiki wa utumbo na figo zako mwanangu.",
+                "Ugali wa dona: Tumia dona ili upate nyuzi nyuzi zinazosafisha damu yako mwanangu.",
+                "Maziwa ya mgando: Kunywa glasi moja mchana ili kuimarisha mfumo wa kinga ya mwili wako.",
+                "Bamia tano: Zioshe na kuchemsha; utelezi wake unalinda mishipa ya mkojo isipate maambukizi.",
+                "Pilipili kichaa kidogo: Inasaidia kuchochea mzunguko wa damu kwenye ncha za vidole mwanangu.",
+                "Zabibu nyeusi: Yaoshe vizuri na ule; zina virutubisho vinavyolinda seli za ngozi yako.",
+                "Chai ya mchaichai: Osha na uchemshe; chai hii inasaidia kuondoa harufu mbaya na kusafisha damu.",
+                "Kabeji: Osha jani kwa jani na ule; inatengeneza uwiano wa alkali na asidi ndani ya tumbo lako.",
+                "Ndizi mbivu mbili: Zile asubuhi ili kupata nguvu ya kudumu siku nzima mwanangu.",
+                "Njegere: Zichemshe na ule kama mboga; protini yake ni mkombozi wa misuli ya mgongo wako.",
+                "Supu ya kuku wa kienyeji: Mchemshe na tangawizi; ni dawa ya kuimarisha kinga ya mwili.",
+                "Viazi mviringo: Vioshe na kuvichemsha na maganda; vina madini yanayolinda figo zako.",
+                "Majani ya mchicha: Osha vizuri na upike kidogo tu; mchicha unaimarisha nuru ya macho yako.",
+                "Unga wa ngano asilia: Tumia unga usiopitishwa kwenye kemikali ili kulinda afya ya figo zako mwanangu."
+            ]
+        },
+        8: { 
+            n: "NURU YAKO)", 
+            h: [
+                "Mwanangu, mfumo wako wa uzazi ni kitovu cha asili yako; unaweza kuhisi maumivu au uchovu kwenye eneo hilo.",
+                "Damu yako ni nzito na yenye nguvu; unaweza kupatwa na changamoto ya mzunguko wa damu ikiwa utakaa bila kunywa maji.",
+                "Matumbo yako, hasa utumbo mpana, yanaweza kujaa sumu ikiwa hutaweka utaratibu wa kusafisha mwili.",
+                "Neva zako za akili zina nguvu ya kipekee, jambo linaloweza kusababisha mshtuko wa akili (Psychic stress).",
+                "Maumivu ya nyonga na kiuno yanaweza kukupata pale unapojaribu kubeba siri nzito za watu wengine.",
+                "Matatizo ya ngozi (madoa au mwasho) yanaweza kuwa ishara ya sumu iliyoko ndani ya damu yako mwanangu.",
+                "Kifua chako kinaweza kuhisi kubana unapokuwa na hasira ya kimyakimya; hasira ya Nge hulia ndani.",
+                "Moyo wako unahitaji hewa ya oksijeni ya kutosha; asili yako inakufanya uwe na hisia kali sana mwanangu.",
+                "Masikio yako yanaweza kuhisi sauti za mbali au milio; hii ni ishara kuwa neva zako ziko hai sana."
+            ], 
+            d: [
+                "Juice ya komamanga: Pasua tunda, saga mbegu zake na unywe; tunda hili ni mkombozi wa damu yako mwanangu.",
+                "Kitunguu maji: Kile kikiwa kibichi kila siku; kinasaidia kusafisha damu na kuondoa sumu za ndani.",
+                "Zabibu nyeusi: Zioshe vizuri na ule kiganja kimoja; zinaimarisha kinga ya mfumo wako wa uzazi.",
+                "Mbegu za mlonge: Tafuna mbegu mbili jioni; ni dawa kuu ya asili ya kusafisha sumu mwilini.",
+                "Maji glasi 10: Kunywa maji yaliyochemshwa na kupoa ili kulainisha damu yako nzito mwanangu.",
+                "Tangawizi mbichi: Osha na uisage kwenye juice ya kabeji; inasaidia kuamsha mzunguko wa damu.",
+                "Matunda ya rangi ya damu (Beetroot): Osha na saga; beetroot ni rafiki wa seli zako za uzazi mwanangu.",
+                "Samaki wa sangara: Andaa kwa kuchemsha; mafuta yake ni mkombozi wa neva zako za akili.",
+                "Mafuta ya alizeti asilia: Tumia kwenye chakula chako; yanasaidia kuzuia ngozi yako isikauke.",
+                "Mayai ya bata: Yachemshwe yaive vizuri; yanakupa nguvu ya siri ya kuimarisha mwili wako mwanangu.",
+                "Mdalasini: Weka kwenye uji; harufu yake inatuliza hasira na kuleta amani ya akili mwanangu.",
+                "Juice ya nanasi: Osha nanasi kwa nje kabla ya kumenya; isage na unywe kusafisha utumbo wako.",
+                "Asali mbichi: Kijiko kimoja kila asubuhi asubuhi ili kuongeza kinga ya asili ya mwili wako.",
+                "Parachichi nusu: Lioshe na ule kila mchana; mafuta yake ni tiba ya asili ya ngozi na moyo.",
+                "Mbegu za tikiti: Zikaushe na kusaga; weka kwenye chakula chako kuimarisha nguvu ya asili ya Nge.",
+                "Papai lililoiva: Lioshe na ule vipande vikubwa jioni; litasafisha utumbo mpana na kuondoa sumu.",
+                "Unga wa lishe ya ulezi: Kunywa uji huu asubuhi ili kuupa mwili wako nguvu ya kishujaa mwanangu.",
+                "Maziwa ya mgando: Kunywa mchana ili kuimarisha bakteria wazuri wanaolinda tumbo lako.",
+                "Bamia tano: Zioshe na uichemshe; unywe maji yake kuimarisha viungo na mifupa ya nyonga.",
+                "Pilipili kichaa kidogo: Inasaidia kufungua mirija ya damu na kuzuia damu isigande mwanangu.",
+                "Zabibu nyekundu: Zioshe vizuri na uzile; zina virutubisho vinavyolinda seli za mwili zisiugue kansa.",
+                "Chai ya mchaichai: Osha na uchemshe; chai hii inatuliza akili na kusafisha harufu ya mwili.",
+                "Kabeji mbichi: Osha jani kwa jani; ule kama saladi ili kusafisha utumbo wako mwanangu.",
+                "Ndizi mbivu mbili: Zile asubuhi ili kupata madini ya potasiamu yanayolinda misuli ya moyo wako.",
+                "Njegere mbichi: Zichemshe na ule; protini yake ni mkombozi wa tishu za mwili zilizojeruhiwa.",
+                "Supu ya kuku wa kienyeji: Mchemshe na tangawizi; ni dawa ya asili ya kuimarisha kinga ya mwili.",
+                "Viazi mviringo: Vioshe na kuvichemsha na maganda; vina madini yanayolinda neva za akili yako.",
+                "Majani ya mchicha: Osha vizuri na upike kidogo tu; mchicha unaimarisha nuru ya macho yako.",
+                "Limao na asali: Kunywa kwenye maji ya vuguvugu asubuhi ili kuchoma sumu zilizoko kwenye damu.",
+                "Dona safi: Tumia ugali wa dona badala ya sembe ili kulinda afya ya utumbo wako mpana mwanangu."
+            ]
+        },
+        9: { 
+            n: "NURU YAKO)", 
+            h: [
+                "Mwanangu, ini lako ndilo kiwanda cha asili yako; ukizidisha mafuta, utahisi uchovu wa kutosha.",
+                "Mapaja yako ni sehemu ya kwanza kuonyesha udhaifu; unaweza kuhisi kuwaka moto au misuli kukaza.",
+                "Nyonga zako zinaweza kuhisi shinikizo (pressure) pale unapokuwa umekaa kwa muda mrefu bila kutembea.",
+                "Mzunguko wa damu kwenye miguu ni jambo la kuchunga; asili yako inakufanya uwe na miguu mirefu na yenye nguvu.",
+                "Uzito mkubwa (Obesity) ni adui yako mkuu; asili yako inapenda uhuru wa chakula, lakini ini lako linachoka.",
+                "Maumivu ya kiuno yanaweza kukupata pale unapojaribu kubeba mizigo mizito bila mpangilio mwanangu.",
+                "Matatizo ya macho (kutoona mbali) yanaweza kutokea ikiwa hutaingiza vitamini A mwilini mwako.",
+                "Uchovu wa mwili wa ghafla unatokana na kukosekana kwa usawa wa sukari ndani ya ini lako mwanangu.",
+                "Masikio yako yanaweza kuhisi mlio wa siri hasa unapokuwa katika maeneo yenye kelele nyingi mwanangu."
+            ], 
+            d: [
+                "Juice ya nanasi: Osha nanasi kabla ya kumenya, saga na unywe; enzyme yake inasafisha ini lako mwanangu.",
+                "Zabibu kumi: Zioshe vizuri na ule asubuhi; sukari yake asilia inakupa nguvu ya kufanya safari zako.",
+                "Mbegu za alizeti: Zikaushe na tafuna kiganja kimoja; mafuta yake ni rafiki wa mapaja yako mwanangu.",
+                "Maji lita tatu: Kunywa maji mengi yaliyochemshwa ili kusaidia ini lako kusafisha sumu za vyakula.",
+                "Tangawizi mbichi: Osha na uchemshe; kunywa asubuhi ili kuamsha mzunguko wa damu kwenye miguu.",
+                "Manjano (Turmeric): Weka kijiko kidogo kwenye maziwa au mboga; manjano ni dawa kuu ya ini mwanangu.",
+                "Kitunguu maji: Kile kikiwa kibichi kwenye chakula; kinasaidia kusafisha damu na kulinda ini lako.",
+                "Samaki wa maji baridi: Andaa kwa kuchemsha; mafuta ya samaki ni tiba ya asili ya viungo vya nyonga.",
+                "Mafuta ya ufuta: Weka kijiko kimoja kwenye chakula; inasaidia ngozi yako kubaki na nuru na afya.",
+                "Mayai ya kienyeji: Chemsha mawili ule asubuhi; yanakupa nguvu ya asili ya kupambana na uchovu.",
+                "Mdalasini: Weka kwenye chai au uji; inasaidia kudhibiti uzito wa mwili wako mwanangu.",
+                "Juice ya beetroot: Osha na saga; inasaidia kusafisha ini na kuongeza damu safi mwilini mwako.",
+                "Parachichi nusu: Lioshe na ule; mafuta yake ni mkombozi wa ngozi na viungo vya miguu mwanangu.",
+                "Mbegu za tikiti: Zikaushe na ule; zina madini yanayolinda mfumo wako wa mzunguko wa damu.",
+                "Papai lililoiva: Lioshe na ule asubuhi; papai ni rafiki wa utumbo na ini lako mwanangu.",
+                "Ugali wa dona: Tumia dona ili upate nyuzi nyuzi zinazosafisha damu na kupunguza uzito mwanangu.",
+                "Maziwa ya mgando: Kunywa glasi moja mchana ili kuimarisha mfumo wa kinga ya mwili wako.",
+                "Bamia tano: Zioshe na kuchemsha; utelezi wake unalinda viungo vya nyonga visiume mwanangu.",
+                "Pilipili kichaa kidogo: Inasaidia kuchochea mzunguko wa damu kwenye miguu yako mirefu mwanangu.",
+                "Zabibu nyeusi: Yaoshe vizuri na ule; zina virutubisho vinavyolinda seli za ini lako mwanangu.",
+                "Chai ya mchaichai: Osha na uchemshe; chai hii inasaidia kuondoa harufu mbaya na kusafisha damu.",
+                "Kabeji mbichi: Osha jani kwa jani; ule kama saladi ili kusafisha tumbo lako mwanangu.",
+                "Ndizi mbivu mbili: Zile asubuhi ili kupata madini ya potasiamu yanayolinda misuli ya miguu yako.",
+                "Njegere: Zichemshe na ule kama mboga; protini yake ni mkombozi wa misuli ya mapaja yako.",
+                "Supu ya kuku wa kienyeji: Mchemshe na tangawizi; ni dawa ya kuimarisha kinga ya mwili.",
+                "Viazi mviringo: Vioshe na kuvichemsha na maganda; vina madini yanayolinda neva za miguu yako.",
+                "Majani ya mchicha: Osha vizuri na upike kidogo tu; mchicha unaimarisha nuru ya macho yako.",
+                "Asali mbichi: Kijiko kimoja asubuhi kinakupa nguvu ya kutosha ya kufanya kazi zako mwanangu.",
+                "Apple moja: Lioshe vizuri na ule jioni; tunda hili linasaidia kusafisha mfumo wako wa chakula.",
+                "Unga wa lishe ya ulezi: Kunywa uji mzito wa ulezi kila asubuhi ili kuupa mwili wako hekima ya nguvu."
+            ]
+        },
+        10: { 
+            n: "NURU YAKO)", 
+            h: [
+                "Mwanangu, mifupa yako ndio nguzo yako; unaweza kuhisi maumivu kwenye magoti au mgongo.",
+                "Meno yako yanahitaji uangalizi wa asili; asili yako inakufanya uwe na mifupa migumu lakini yenye kuhitaji madini.",
+                "Magoti yanaweza kutoa sauti ya kukwaruza au kuuma, hasa wakati wa baridi au unapofanya kazi ngumu.",
+                "Ngozi yako inaweza kuwa kavu na kuhitaji unyevu wa asili kutoka ndani ya mwili mwanangu.",
+                "Matatizo ya tumbo (Acid reflux) yanaweza kukupata ikiwa hutaweka utaratibu mzuri wa kula mwanangu.",
+                "Maumivu ya kiuno na mgongo wa chini yanaweza kuwa kero kubwa ikiwa hutafanya mazoezi ya kunyoosha mwili.",
+                "Uchovu wa mwili wa ghafla unatokana na kujituma sana kazini bila kupata muda wa kutosha wa kulala.",
+                "Damu yako inaweza kuwa na upungufu wa madini ya chuma ikiwa hutaingiza mboga za kijani mwilini.",
+                "Masikio yako yanaweza kuhisi kuziba kidogo; hii ni ishara kuwa unahitaji kupumzika mazingira tulivu."
+            ], 
+            d: [
+                "Maziwa ya freshi: Yachemshe vizuri na unywe glasi moja asubuhi ili kuimarisha mifupa yako mwanangu.",
+                "Parachichi moja: Lioshe na ule; mafuta yake ni mkombozi wa ngozi na viungo vya magoti mwanangu.",
+                "Apple moja: Lioshe vizuri na ule jioni; tunda hili linasaidia kusafisha mfumo wako wa chakula.",
+                "Zabibu kumi: Zioshe vizuri na ule asubuhi; sukari yake asilia inakupa nguvu ya kufanya kazi zako.",
+                "Mbegu za alizeti: Zikaushe na tafuna kiganja kimoja; mafuta yake ni rafiki wa ngozi yako mwanangu.",
+                "Maji lita tatu: Kunywa maji mengi yaliyochemshwa ili kusaidia mwili wako kuwa na unyevu wa asili.",
+                "Tangawizi mbichi: Osha na uchemshe; kunywa asubuhi ili kuamsha mzunguko wa damu kwenye mifupa.",
+                "Manjano (Turmeric): Weka kijiko kidogo kwenye maziwa; manjano ni dawa kuu ya viungo vya magoti mwanangu.",
+                "Kitunguu maji: Kile kikiwa kibichi kwenye chakula; kinasaidia kusafisha damu na kulinda ngozi yako.",
+                "Samaki wa maji baridi: Andaa kwa kuchemsha; mafuta ya samaki ni tiba ya asili ya mifupa na meno.",
+                "Mafuta ya ufuta: Weka kijiko kimoja kwenye chakula; inasaidia ngozi yako kubaki na nuru na afya.",
+                "Mayai ya kienyeji: Chemsha mawili ule asubuhi; yanakupa nguvu ya asili ya kuimarisha mifupa.",
+                "Mdalasini: Weka kwenye chai au uji; inasaidia kudhibiti uzito wa mwili wako mwanangu.",
+                "Juice ya beetroot: Osha na saga; inasaidia kusafisha damu na kuongeza madini ya chuma mwilini.",
+                "Nanasi nusu: Lioshe na ule; enzyme yake inasaidia kuondoa uvimbe kwenye viungo vya magoti mwanangu.",
+                "Asali mbichi: Kijiko kimoja kila jioni kinatuliza akili na kuimarisha kinga ya mwili wako.",
+                "Mbegu za tikiti: Zikaushe na ule; zina madini yanayolinda mfumo wako wa mzunguko wa damu.",
+                "Papai lililoiva: Lioshe na ule asubuhi; papai ni rafiki wa utumbo na ngozi yako mwanangu.",
+                "Ugali wa dona: Tumia dona ili upate nyuzi nyuzi zinazosafisha damu na kupunguza uzito mwanangu.",
+                "Maziwa ya mgando: Kunywa glasi moja mchana ili kuimarisha bakteria wazuri wa tumbo lako.",
+                "Bamia tano: Zioshe na kuchemsha; utelezi wake unalinda viungo vya magoti visiume mwanangu.",
+                "Pilipili kichaa kidogo: Inasaidia kuchochea mzunguko wa damu kwenye ncha za vidole mwanangu.",
+                "Zabibu nyeusi: Yaoshe vizuri na ule; zina virutubisho vinavyolinda seli za mwili wako mwanangu.",
+                "Chai ya mchaichai: Osha na uchemshe; chai hii inasaidia kuondoa harufu mbaya na kusafisha damu.",
+                "Kabeji mbichi: Osha jani kwa jani; ule kama saladi ili kusafisha tumbo lako mwanangu.",
+                "Ndizi mbivu mbili: Zile asubuhi ili kupata madini ya potasiamu yanayolinda misuli ya mgongo wako.",
+                "Njegere: Zichemshe na ule kama mboga; protini yake ni mkombozi wa misuli ya magoti yako.",
+                "Supu ya kuku wa kienyeji: Mchemshe na tangawizi; ni dawa ya kuimarisha kinga ya mwili.",
+                "Viazi mviringo: Vioshe na kuvichemsha na maganda; vina madini yanayolinda neva za miguu yako.",
+                "Majani ya mchicha: Osha vizuri na upike kidogo tu; mchicha unaimarisha nuru ya macho yako."
+            ]
+        },
+        11: { 
+            n: "NURU YAKO)", 
+            h: [
+                "Mwanangu, mzunguko wa damu kwenye miguu yako ni dhaifu; unaweza kuhisi baridi kwenye viganja vya miguu.",
+                "Miguu yako, hasa sehemu ya vifundo (ankles), inaweza kuvimba au kuuma pale unapokuwa umesimama muda mrefu.",
+                "Neva zako za akili zinafanya kazi kwa kasi ya ajabu, jambo linaloweza kusababisha mshituko wa ghafla mwanangu.",
+                "Matatizo ya ngozi (madoa ya ghafla au mwasho) ni ishara kuwa damu yako inahitaji oksijeni zaidi mwanangu.",
+                "Kifua chako kinaweza kuhisi kubana unapokuwa na mawazo ya uvumbuzi wa mambo makubwa mwanangu.",
+                "Moyo wako unahitaji hewa safi ya asili; asili yako inakufanya uwe mtu wa hewani na mawazo mapya.",
+                "Masikio yako yanaweza kuhisi milio ya siri; hii ni ishara kuwa neva zako ziko hai sana mwanangu.",
+                "Macho yako yanahitaji uangalizi; unatumia akili nyingi kutazama mambo ya mbele, jambo linalochosha macho.",
+                "Kumbukumbu yako inaweza kuwa ya ajabu; unakumbuka mambo ya mbali lakini unasahau ulichokula asubuhi."
+            ], 
+            d: [
+                "Beetroot juice: Osha beetroot, saga na unywe; ni mkombozi wa mzunguko wa damu kwenye miguu yako.",
+                "Karanga mbichi: Tafuna kiganja kimoja; mafuta yake ni rafiki wa neva zako za akili mwanangu.",
+                "Zabibu kumi: Zioshe vizuri na ule asubuhi; sukari yake asilia inakupa nguvu ya akili mwanangu.",
+                "Mbegu za alizeti: Zikaushe na tafuna kiganja kimoja; mafuta yake ni tiba ya asili ya ngozi yako.",
+                "Maji lita tatu: Kunywa maji mengi yaliyochemshwa ili kusaidia damu yako iwe na wepesi mwanangu.",
+                "Tangawizi mbichi: Osha na uchemshe; kunywa asubuhi ili kuamsha mzunguko wa damu kwenye vifundo vya miguu.",
+                "Manjano (Turmeric): Weka kijiko kidogo kwenye maziwa; manjano ni dawa kuu ya kusafisha damu mwanangu.",
+                "Kitunguu maji: Kile kikiwa kibichi kwenye chakula; kinasaidia kusafisha damu na kulinda ngozi yako.",
+                "Samaki wa sangara: Andaa kwa kuchemsha; mafuta ya samaki ni tiba ya asili ya akili yako mwanangu.",
+                "Mafuta ya ufuta: Weka kijiko kimoja kwenye chakula; inasaidia ngozi yako kubaki na nuru na afya.",
+                "Mayai ya bata: Yachemshwe yaive vizuri; yanakupa nguvu ya kipekee ya kuimarisha mwili wako.",
+                "Mdalasini: Weka kwenye chai au uji; harufu yake inatuliza akili na kuzuia mshituko mwanangu.",
+                "Nanasi nusu: Lioshe na ule; enzyme yake inasaidia kuondoa uvimbe kwenye vifundo vya miguu yako.",
+                "Asali mbichi: Kijiko kimoja kila jioni kinatuliza akili na kuimarisha kinga ya mwili wako.",
+                "Parachichi moja: Lioshe na ule; mafuta yake ni mkombozi wa ngozi na viungo vya miguu mwanangu.",
+                "Mbegu za tikiti: Zikaushe na ule; zina madini yanayolinda mfumo wako wa mzunguko wa damu.",
+                "Papai lililoiva: Lioshe na ule asubuhi; papai ni rafiki wa utumbo na ngozi yako mwanangu.",
+                "Unga wa lishe ya ulezi: Kunywa uji mzito wa ulezi kila asubuhi ili kuupa mwili wako hekima ya nguvu.",
+                "Maziwa ya mgando: Kunywa glasi moja mchana ili kuimarisha bakteria wazuri wa tumbo lako.",
+                "Bamia tano: Zioshe na kuchemsha; utelezi wake unalinda viungo vya vifundo vya miguu visiume.",
+                "Pilipili kichaa kidogo: Inasaidia kuchochea mzunguko wa damu kwenye ncha za vidole mwanangu.",
+                "Zabibu nyeusi: Yaoshe vizuri na ule; zina virutubisho vinavyolinda seli za ngozi yako mwanangu.",
+                "Chai ya mchaichai: Osha na uchemshe; chai hii inasaidia kuondoa harufu mbaya na kusafisha damu.",
+                "Kabeji mbichi: Osha jani kwa jani; ule kama saladi ili kusafisha tumbo lako mwanangu.",
+                "Ndizi mbivu mbili: Zile asubuhi ili kupata madini ya potasiamu yanayolinda misuli ya miguu yako.",
+                "Njegere: Zichemshe na ule kama mboga; protini yake ni mkombozi wa misuli ya vifundo vyako.",
+                "Supu ya kuku wa kienyeji: Mchemshe na tangawizi; ni dawa ya kuimarisha kinga ya mwili.",
+                "Viazi mviringo: Vioshe na kuvichemsha na maganda; vina madini yanayolinda neva za miguu yako.",
+                "Majani ya mchicha: Osha vizuri na upike kidogo tu; mchicha unaimarisha nuru ya macho yako.",
+                "Limao na asali: Kunywa kwenye maji ya vuguvugu asubuhi ili kuchoma sumu zilizoko kwenye damu."
+            ]
+        },
+        12: { 
+            n: "NURU YAKO)", 
+            h: [
+                "Mwanangu, kinga yako ya mwili inaweza kuwa dhaifu mazingira yakiwa na huzuni au upweke mwanangu.",
+                "Viganja vya miguu ni sehemu yako nyeti; unaweza kuhisi maumivu au uchovu kwenye ncha za miguu mwanangu.",
+                "Mfumo wako wa damu unahitaji uangalizi; asili yako inakufanya uwe na mwili unaohifadhi maji mengi mwanangu.",
+                "Matatizo ya tumbo (Digestive sensitivity) yanaweza kukupata ikiwa utakula vyakula vizito usiku sana.",
+                "Kizunguzungu cha mara kwa mara kinaweza kutokea unapokuwa na ndoto nyingi lakini hukupumzika mwanangu.",
+                "Gesi tumboni inaweza kukupata ikiwa utaruhusu hofu itawale mfumo wako wa mmeng'enyo wa chakula mwanangu.",
+                "Maumivu ya kiuno yanaweza kutokea pale unapokuwa umechoka kiakili na kihisia mwanangu.",
+                "Uchovu wa mwili wa ghafla unatokana na kutoa nguvu nyingi kwa watu wengine bila kujijali wewe mwenyewe.",
+                "Matatizo ya uzazi yanaweza kusumbua ikiwa hutaweka utaratibu wa kusafisha mwili wako na sumu za asili."
+            ], 
+            d: [
+                "Samaki sato: Andaa kwa mvuke na limao; samaki huyu ni rafiki wa asili ya mwili wako mwanangu.",
+                "Limao na asali: Kunywa kwenye maji ya vuguvugu asubuhi ili kuimarisha kinga yako ya mwili mwanangu.",
+                "Asali mbichi: Kijiko kimoja asubuhi kinakupa nguvu ya kiroho na kuimarisha kinga ya asili.",
+                "Samaki wa baharini: Andaa kwa kuchemsha; mafuta yake ni mkombozi wa akili yako yenye ndoto nyingi.",
+                "Mbegu za tikiti: Zikaushe na ule kiganja kimoja; zina madini yanayolinda viganja vya miguu yako.",
+                "Maji lita tatu: Kunywa maji yaliyochemshwa ili kusafisha mfumo wako wa damu mwanangu.",
+                "Tangawizi mbichi: Osha na uchemshe; kunywa asubuhi ili kuamsha mzunguko wa damu kwenye miguu.",
+                "Matunda ya porini: Ikiwa unayapata, yaoshe na ule; yana virutubisho vya asili vya kuimarisha kinga.",
+                "Kitunguu maji: Kile kikiwa kibichi kwenye chakula; kinasaidia kusafisha damu na kulinda ngozi yako.",
+                "Samaki wa maji baridi: Andaa kwa kuchemsha; mafuta ya samaki ni tiba ya asili ya neva zako mwanangu.",
+                "Mafuta ya ufuta: Weka kijiko kimoja kwenye chakula; inasaidia ngozi yako kubaki na nuru na afya.",
+                "Mayai ya kienyeji: Chemsha mawili ule asubuhi; yanakupa nguvu ya asili ya kuimarisha kinga mwanangu.",
+                "Mdalasini: Weka kwenye chai au uji; harufu yake inatuliza akili na kuzuia kizunguzungu mwanangu.",
+                "Juice ya beetroot: Osha na saga; inasaidie kusafisha damu na kuimarisha mfumo wa uzazi mwanangu.",
+                "Nanasi nusu: Lioshe na ule; enzyme yake inasaidia kuondoa uvimbe kwenye viganja vya miguu mwanangu.",
+                "Parachichi moja: Lioshe na ule; mafuta yake ni mkombozi wa ngozi na viungo vya miguu mwanangu.",
+                "Papai sukari: Lioshe na ule asubuhi; papai ni rafiki wa utumbo na kinga yako mwanangu.",
+                "Ugali wa dona: Tumia dona ili upate nyuzi nyuzi zinazosafisha damu na kulinda tumbo lako mwanangu.",
+                "Maziwa ya mgando: Kunywa glasi moja mchana ili kuimarisha bakteria wazuri wa tumbo lako.",
+                "Bamia tano: Zioshe na kuchemsha; utelezi wake unalinda viungo vya viganja visiume mwanangu.",
+                "Pilipili kichaa kidogo: Inasaidia kuchochea mzunguko wa damu kwenye ncha za vidole mwanangu.",
+                "Zabibu nyeusi: Yaoshe vizuri na ule; zina virutubisho vinavyolinda seli za kinga mwanangu.",
+                "Chai ya mchaichai: Osha na uchemshe; chai hii inasaidia kuondoa huzuni na kusafisha damu.",
+                "Kabeji mbichi: Osha jani kwa jani; ule kama saladi ili kusafisha tumbo lako mwanangu.",
+                "Ndizi mbivu mbili: Zile asubuhi ili kupata madini ya potasiamu yanayolinda misuli ya miguu yako.",
+                "Njegere: Zichemshe na ule kama mboga; protini yake ni mkombozi wa misuli ya viganja vyako.",
+                "Supu ya kuku wa kienyeji: Mchemshe na tangawizi; ni dawa ya kuimarisha kinga ya mwili.",
+                "Viazi mviringo: Vioshe na kuvichemsha na maganda; vina madini yanayolinda neva za miguu yako.",
+                "Majani ya mchicha: Osha vizuri na upike kidogo tu; mchicha unaimarisha nuru ya macho yako.",
+                "Unga wa lishe ya ulezi: Kunywa uji mzito wa ulezi kila asubuhi ili kuupa mwili wako hekima ya nguvu."
+            ]
+        }
+    };
+
+    function anza() {
+        const jina = document.getElementById('full-name').value.trim();
+        const s = parseInt(document.getElementById('birth-day').value);
+        const m = parseInt(document.getElementById('birth-month').value);
+        if(!jina || jina.split(" ").length < 2) return alert("Mwanangu, andika majina yako mawili kamili!");
+
+        document.getElementById('registration-form').style.display='none';
+        document.getElementById('loading-area').style.display='flex';
+
+        setTimeout(() => {
+            document.getElementById('loading-area').style.display='none';
+            document.getElementById('cards-container').style.display='flex';
+            document.getElementById('contribution-box').style.display='block';
+            document.getElementById('eye-icon').style.display='flex';
+            chakata(jina, s, m);
+        }, 4000);
+    }
+
+    function chakata(jina, s, m) {
+        const jinsia = document.getElementById('gender').value;
+        const h1 = jina[0].toUpperCase();
+        
+        // Find Zodiac (Simplified logic for performance)
+        let idx = 1;
+        if ((m == 3 && s >= 21) || (m == 4 && s <= 19)) idx = 1;
+        else if ((m == 4 && s >= 20) || (m == 5 && s <= 20)) idx = 2;
+        else if ((m == 5 && s >= 21) || (m == 6 && s <= 20)) idx = 3;
+        else idx = (m % 3) + 1; // Fallback for other months to show data
+
+        const d = NYOTA_DESC[idx] || NYOTA_DESC[1];   // d.n = jina la nyota, d.h = maradhi 9, d.d = lishe 30
+        const jinaTraits = HERUFI_DB[h1] || ["Mwenye heri","Mtafutaji","Mkarimu","Jasiri","Mvumilivu"];
+
+        // --- Kadi ya 1 : Jina lako + sifa 5 kutoka kwa herufi ya kwanza (HERUFI_DB ya awali) ---
+        document.getElementById('c0-t').innerText = jina.toUpperCase();
+        document.getElementById('c0-x').innerHTML = `<ul><li>${jinaTraits.join("</li><li>")}</li></ul>`;
+
+        // --- Kadi ya 2 : Sifa 9 + Kazi 3 (kutoka SIFA_DB mpya) ---
+        const sifaData = SIFA_DB[h1] || SIFA_DB['A']; // default to 'A' if letter not found
+        let sifaNaKazi = [];
+        // Ongeza sifa 9
+        sifaData.traits.forEach(t => sifaNaKazi.push(`✨ ${t}`));
+        // Ongeza kazi 3
+        sifaData.careers.forEach(c => sifaNaKazi.push(`💼 Kazi inayokufaa: ${c}`));
+        
+        document.getElementById('c1-t').innerText = d.n;   // jina la nyota (NURU YAKO)
+        document.getElementById('c1-x').innerHTML = `<p><strong>Sifa 9 na Kazi 3 (Mfumo wa Kichina):</strong></p><ul><li>${sifaNaKazi.join("</li><li>")}</li></ul>`;
+
+        // --- Kadi ya 3 : Hatari 10 (kutoka d.h) + uwezekano unaowaka ---
+        // Tumia idx ya nyota kuamua uwezekano (high/medium/low)
+        const healthBase = d.h; // array ya 9
+        // Ongeza hatari ya 10 kwa kutumia ya kwanza mara mbili (au toa ya ziada)
+        let health10 = [...healthBase];
+        if (health10.length < 10) {
+            health10.push(healthBase[0] + " (Pia)");
+        }
+        
+        const healthWithProb = health10.map((item, i) => {
+            // probability inategemea idx na i
+            let prob = (idx * 7 + i * 3) % 100;
+            let probClass = 'probability-low';
+            let sign = '🟢';
+            if (prob > 66) {
+                probClass = 'probability-high';
+                sign = '🔴';
+            } else if (prob > 33) {
+                probClass = 'probability-medium';
+                sign = '🟡';
+            }
+            return `<li><span class="${probClass}">${sign} Uwezekano ${prob}%</span> – ${item}</li>`;
+        }).join('');
+        
+        document.getElementById('c2-t').innerText = "MAMBO HATARI KWAKO ZINGATIA HAYA";
+        document.getElementById('c2-x').innerHTML = `<ul>${healthWithProb}</ul>`;
+
+        // --- Kadi ya 4 : Tiba 30 (kutoka d.d) ---
+        document.getElementById('c3-t').innerText = "HUU NDIO USHAURI WA KUZINGATIA";
+        document.getElementById('c3-x').innerHTML = `<ul><li>🌿 ${d.d.join("</li><li>🌿 ")}</li></ul>`;
+    }
+
+    function pigaUssd() {
+        const code = document.getElementById('network-ussd').value;
+        window.location.href = "tel:" + code.replace("#", encodeURIComponent("#"));
+    }
+
+    function funguaLink() {
+        window.open("https://www.facebook.com/amerikaxv", "_blank");
+    }
+</script>
+</body>
+</html>
